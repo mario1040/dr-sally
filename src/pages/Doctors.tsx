@@ -106,7 +106,7 @@ const DoctorProfile = () => {
 
             {/* الاسم والتخصص */}
             <motion.h1 variants={fadeUp} className="text-5xl md:text-6xl lg:text-[4.5rem] font-bold text-slate-900 leading-[1.1] mb-4 font-cairo">
-              {isRTL ? 'د. سالي زكريا' : 'Dr. Sally Zakria'}
+              {isRTL ? 'د. سالي العدوي' : 'Dr. Sally El Adawy'}
             </motion.h1>
             
             <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-500 mb-8 font-cairo">
@@ -116,8 +116,8 @@ const DoctorProfile = () => {
             {/* نبذة عن الدكتورة */}
             <motion.p variants={fadeUp} className="text-lg text-slate-500 leading-relaxed mb-10 max-w-2xl font-medium">
                {isRTL 
-                  ? 'تُعد الدكتورة سالي زكريا من أبرز الأسماء في عالم التجميل والعناية بالبشرة. بخبرة تمتد لسنوات طويلة، تجمع بين الدقة الطبية واللمسة الفنية لإبراز الجمال الطبيعي لكل حالة. تؤمن بأن التجميل ليس مجرد إجراء، بل هو رحلة لاستعادة الثقة بالنفس والظهور بأفضل صورة ممكنة.'
-                  : 'Dr. Sally Zakria is one of the most prominent names in the world of aesthetics and skin care. With years of experience, she combines medical precision with an artistic touch to highlight the natural beauty of each case.'}
+                  ? 'تُعد الدكتورة سالي العدوي من أبرز الأسماء في عالم التجميل والعناية بالبشرة. بخبرة تمتد لسنوات طويلة، تجمع بين الدقة الطبية واللمسة الفنية لإبراز الجمال الطبيعي لكل حالة. تؤمن بأن التجميل ليس مجرد إجراء، بل هو رحلة لاستعادة الثقة بالنفس والظهور بأفضل صورة ممكنة.'
+                  : 'Dr. Sally El Adawy is one of the most prominent names in the world of aesthetics and skin care. With years of experience, she combines medical precision with an artistic touch to highlight the natural beauty of each case.'}
             </motion.p>
 
             {/* مؤهلات الدكتورة (Cards) */}
