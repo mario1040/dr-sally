@@ -50,8 +50,8 @@ const DoctorProfile = () => {
             <div className="relative w-full max-w-md h-[600px] lg:h-[750px] rounded-t-[20rem] rounded-b-[4rem] overflow-hidden shadow-2xl shadow-slate-300/60 ring-1 ring-black/5 group">
                {/* مسار صورة الدكتورة فريحان */}
                <img 
-                 src="images/drfreehan.png" 
-                 alt={isRTL ? "د. سالي زكريا" : "Dr. Sally Zakria"} 
+                 src="images/sally2.png" 
+                 alt={isRTL ? "د. سالي العدوي" : "Dr. Sally El Adawy"} 
                  className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
                  onError={(e) => {
                    (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=2070&auto=format&fit=crop";
