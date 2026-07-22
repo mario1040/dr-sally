@@ -182,7 +182,7 @@ const EditorialHeroSection = () => {
       </div>
 
       {/* ── marquee ticker ── */}
-      <div className="absolute left-0 right-0 top-50 z-20 overflow-hidden border-y border-[#211D19]/10 bg-[#211D19] py-2">
+      <div className="absolute left-0 right-0 top-20 z-20 overflow-hidden border-y border-[#211D19]/10 bg-[#211D19] py-2">
         <div className={`eh-marquee-track flex w-max gap-8 ${isRTL ? "rtl" : ""}`}>
           {[...marqueeWords, ...marqueeWords].map((w, i) => (
             <span

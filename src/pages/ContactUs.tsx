@@ -46,7 +46,7 @@ const ContactUs = () => {
   return (
     <>
       {/* ================= HERO ================= */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-gradient-to-b from-[#fdfbf8] via-[#faf3ec] to-[#f6e9df]">
+      <section className="relative pt-48 pb-20 overflow-hidden bg-gradient-to-b from-[#fdfbf8] via-[#faf3ec] to-[#f6e9df]" >
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px]" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] max-w-3xl bg-[radial-gradient(circle,rgba(255,255,255,0.9)_0%,rgba(233,185,196,0.2)_45%,transparent_72%)] pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none">

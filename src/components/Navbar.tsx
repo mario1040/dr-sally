@@ -135,6 +135,9 @@ const Navbar = () => {
   return (
     <div style={NAV_VARS}>
       {/* ======================= TOP STRIP ======================= */}
+      {/* ======================= GLOBAL SPACER ======================= */}
+      {/* هذا العنصر يحجز مساحة النافبار الثابت لكي لا يغطي على محتوى أي صفحة */}
+      <div className="h-[40px] lg:h-[80px] w-full shrink-0" aria-hidden="true" />
       <motion.div
         className="fixed top-0 left-0 right-0 z-50 text-[11px] tracking-wide border-b overflow-hidden"
         style={{ background: 'var(--ink)', borderColor: 'var(--hairline)' }}
