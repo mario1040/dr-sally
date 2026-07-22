@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
-import { Stethoscope, Cpu, ClipboardList, Award, Sparkles, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Stethoscope, Cpu, ClipboardList, Award, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 interface FeatureItem {
@@ -13,6 +13,7 @@ interface FeatureItem {
 const WhyUsSection = () => {
   const { t, isRTL } = useLanguage();
 
+  // الترتيب هنا له معنى حقيقي: رحلة العميلة معنا من أول استشارة حتى النتيجة
   const features: FeatureItem[] = [
     {
       id: 1,
@@ -41,141 +42,112 @@ const WhyUsSection = () => {
   ];
 
   return (
-    <section className="relative py-32 bg-white overflow-hidden">
-      
-      {/* ================= BACKGROUND MAGIC ================= */}
+    <section className="relative py-32 bg-gradient-to-b from-[#fdfbf8] via-[#faf3ec] to-[#f6e9df] overflow-hidden">
+      {/* ================= خلفية دقيقة + توهجات ================= */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px]" />
-      
-      {/* إضاءات خلفية غير منتظمة لتعطي عمقاً إبداعياً */}
-      <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-amber-100/40 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-slate-100/60 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-[#e9b9c4]/25 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#c9a15a]/15 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        
-        {/* ================= HEADER ================= */}
+        {/* ================= الهيدر ================= */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-24 max-w-3xl mx-auto flex flex-col items-center"
+          className="text-center mb-28 max-w-3xl mx-auto flex flex-col items-center"
         >
-          {/* Premium Badge */}
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-amber-200/60 bg-amber-50/50 backdrop-blur-sm text-amber-700 text-sm font-bold tracking-widest uppercase shadow-sm mb-6">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>{isRTL ? 'لماذا عياداتنا؟' : 'Why Choose Us?'}</span>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#c9a15a]/35 bg-white/70 backdrop-blur-sm text-[#8a5f2c] text-sm font-bold tracking-widest uppercase shadow-sm mb-6">
+            <Sparkles className="w-4 h-4 text-[#c9a15a]" />
+            <span>{isRTL ? 'رحلة التحوّل الذهبية' : 'The Golden Ritual'}</span>
           </div>
-          
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 font-cairo leading-[1.2]">
-            {isRTL ? 'نصنع الفارق في' : 'Making a Difference in'} <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 animate-gradient-x">
-              {isRTL ? 'عالم التجميل' : 'The Aesthetic World'}
+
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#3d2f2a] mb-6 font-cairo leading-[1.2]">
+            {isRTL ? 'من أول استشارة' : 'From First Visit'} <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a97c3f] via-[#c9a15a] to-[#a97c3f] bg-[size:200%] animate-gradient-x">
+              {isRTL ? 'إلى نتيجة تستحق الثقة' : 'To Results Worth Trusting'}
             </span>
           </h2>
         </motion.div>
 
-        {/* ================= CREATIVE GRID ================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 pb-12 lg:pb-24">
-          {features.map((feature, i) => (
-            <SpotlightCard key={i} feature={feature} index={i} isRTL={isRTL} />
-          ))}
+        {/* ================= خيط الرحلة الذهبي (العنصر التوقيعي) ================= */}
+        <div className="relative">
+          {/* الخيط العلوي + الضوء المتحرك عليه */}
+          <div className="hidden lg:block absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#c9a15a]/45 to-transparent">
+            <motion.span
+              className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#c9a15a]"
+              style={{ boxShadow: '0 0 10px 3px rgba(201,161,90,0.6)' }}
+              animate={{ left: ['0%', '100%'] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-20 gap-x-8 pb-12 lg:pb-20">
+            {features.map((feature, i) => (
+              <JourneyStop key={feature.id} feature={feature} index={i} isRTL={isRTL} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-// ================= SPOTLIGHT CARD COMPONENT =================
-const SpotlightCard = ({ feature, index, isRTL }: { feature: FeatureItem, index: number, isRTL: boolean }) => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
-
+// ================= محطة في رحلة العميلة (بديل بطاقة السبوتلايت) =================
+const JourneyStop = ({
+  feature,
+  index,
+  isRTL,
+}: {
+  feature: FeatureItem;
+  index: number;
+  isRTL: boolean;
+}) => {
   const Icon = feature.icon;
-  
-  // تأثير التدرج الإبداعي: البطاقات الفردية تنزل للأسفل قليلاً في الشاشات الكبيرة
   const isOdd = index % 2 !== 0;
+  const threadHeight = isOdd ? 88 : 28; // يتدلى كل ختم على ارتفاع مختلف فيعطي إيقاع "عقد" غير نمطي
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.8, delay: index * 0.15, ease: [0.16, 1, 0.3, 1] }}
-      className={`group relative h-full flex flex-col border border-slate-200/60 bg-white/60 backdrop-blur-xl shadow-xl shadow-slate-200/30 rounded-[2.5rem] overflow-hidden cursor-default transition-transform duration-500 hover:-translate-y-2 ${isOdd ? 'lg:translate-y-12' : ''}`}
-      onMouseMove={handleMouseMove}
+      className="relative flex flex-col items-center text-center group"
+      style={{ paddingTop: undefined }}
     >
-      {/* 1. Spotlight Background Glow */}
-      <motion.div
-        className="pointer-events-none absolute -inset-px rounded-[2.5rem] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background: useMotionTemplate`
-            radial-gradient(
-              600px circle at ${mouseX}px ${mouseY}px,
-              rgba(245, 158, 11, 0.08),
-              transparent 80%
-            )
-          `,
-        }}
-      />
-      
-      {/* 2. Spotlight Animated Border */}
-      <motion.div
-        className="pointer-events-none absolute -inset-px rounded-[2.5rem] opacity-0 transition-opacity duration-500 group-hover:opacity-100 z-20"
-        style={{
-            background: useMotionTemplate`
-              radial-gradient(
-                400px circle at ${mouseX}px ${mouseY}px,
-                rgba(245, 158, 11, 0.5),
-                transparent 60%
-              )
-            `,
-            maskImage: `linear-gradient(black, black) content-box, linear-gradient(black, black)`,
-            WebkitMaskImage: `linear-gradient(black, black) content-box, linear-gradient(black, black)`,
-            maskComposite: `exclude`,
-            WebkitMaskComposite: `xor`,
-            padding: `1.5px`,
-        }}
+      {/* الخيط المتدلي من الرف العلوي حتى الختم */}
+      <div
+        className="hidden lg:block w-px bg-gradient-to-b from-[#c9a15a]/50 to-[#c9a15a]/10 mb-4"
+        style={{ height: threadHeight }}
       />
 
-      {/* 3. Card Content */}
-      <div className="relative h-full p-8 md:p-10 flex flex-col items-start z-10">
-        
-        {/* Floating Icon Container */}
-        <div className="relative mb-8">
-           <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-xl scale-50 group-hover:scale-150 transition-transform duration-700 ease-out" />
-           <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-white to-slate-50 border border-slate-100 shadow-sm flex items-center justify-center group-hover:border-amber-200 group-hover:shadow-amber-500/20 transition-all duration-500 overflow-hidden">
-              <div className="absolute inset-0 bg-amber-500 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-in-out rounded-full" />
-              <Icon className="w-7 h-7 text-slate-700 group-hover:text-white transition-colors duration-500 relative z-10" />
-           </div>
+      {/* الختم الشمعي (Wax Seal Medallion) */}
+      <div className="relative mb-6">
+        <div className="absolute inset-0 bg-[#c9a15a]/20 rounded-full blur-lg scale-75 group-hover:scale-125 transition-transform duration-700 ease-out" />
+
+        <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-white to-[#faf3ec] border-2 border-[#c9a15a]/35 shadow-[0_12px_28px_-12px_rgba(201,161,90,0.5)] flex items-center justify-center transition-all duration-500 group-hover:border-[#c9a15a] group-hover:shadow-[0_16px_34px_-10px_rgba(201,161,90,0.6)] group-hover:scale-105">
+          <div className="absolute inset-[6px] rounded-full border border-[#c9a15a]/20" />
+
+          {/* حلقة الختم النابضة عند التحويم */}
+          <span className="absolute inset-0 rounded-full border border-[#c9a15a]/70 opacity-0 scale-100 group-hover:opacity-100 group-hover:scale-125 group-hover:animate-ping transition-all duration-700" />
+
+          <Icon className="relative z-10 w-8 h-8 text-[#a97c3f] group-hover:text-[#8a5f2c] transition-colors duration-500" />
         </div>
 
-        {/* Text Content */}
-        <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-amber-600 transition-colors duration-300 font-cairo">
-          {feature.title}
-        </h3>
-
-        <p className="text-slate-500 text-sm leading-relaxed mb-10 flex-grow font-medium">
-          {feature.description}
-        </p>
-
-        {/* Bottom Indicator (Creative Line & Number) */}
-        <div className="w-full flex justify-between items-end mt-auto relative pt-6 before:absolute before:top-0 before:left-0 before:w-full before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-slate-200 before:to-transparent">
-           <span className="text-4xl font-light text-slate-200 font-cairo group-hover:text-amber-200 transition-colors duration-500 select-none">
-             0{index + 1}
-           </span>
-           
-           <div className={`w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bg-amber-50 group-hover:border-amber-200 transition-all duration-500 transform ${isRTL ? 'translate-x-4 group-hover:translate-x-0' : '-translate-x-4 group-hover:translate-x-0'}`}>
-              <ArrowRight className={`w-4 h-4 text-amber-600 transition-transform duration-500 ${isRTL ? 'rotate-180 group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
-           </div>
+        {/* رقم المرحلة */}
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#3d2f2a] text-[#f6e9df] text-[10px] font-bold tracking-widest whitespace-nowrap shadow-sm">
+          {isRTL ? `المرحلة 0${index + 1}` : `STAGE 0${index + 1}`}
         </div>
-
       </div>
+
+      {/* النص */}
+      <h3 className="text-xl font-bold text-[#3d2f2a] mb-3 font-cairo group-hover:text-[#a97c3f] transition-colors duration-300">
+        {feature.title}
+      </h3>
+      <p className="text-sm text-[#7a675d] leading-relaxed font-medium max-w-[230px]">
+        {feature.description}
+      </p>
     </motion.div>
   );
 };

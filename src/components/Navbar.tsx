@@ -1,392 +1,434 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
-import { Menu, X, Phone, Globe, MapPin, Clock, ArrowRight, ChevronDown, Zap, Activity, ScanFace } from 'lucide-react';
-import { useLanguage } from '@/context/LanguageContext'; 
-import { cn } from '@/lib/utils'; 
+import { Menu, X, Phone, MapPin, Clock, ChevronDown, Globe, ScanFace, Zap, Activity, ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import { cn } from '@/lib/utils';
 
 // ----------------------------------------------------------------------
-// 1. زر "Book Appointment" مع تأثير اللمعان
+// Palette (kept from the previous pass — client liked it):
+// --ink #0E0D0A · --ink-soft #18140D · --gold #BE9A5A
+// --gold-light #E9D6A6 · --ivory #F5EFE2 · --hairline rgba(190,154,90,.22)
+//
+// STRUCTURE THIS PASS — a "crest": the logo sits on a true center axis,
+// nav links wing out symmetrically left/right, and the two outermost
+// actions (language + Book Appointment) mirror each other as bookends.
+// The services dropdown no longer anchors to its trigger (that's what
+// pushed it off-screen) — it now drops as a full-width curtain fixed
+// to the viewport, so it can never overflow horizontally regardless of
+// where "Services" sits or how narrow the window is.
 // ----------------------------------------------------------------------
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-  variant?: 'primary' | 'outline';
-}
 
-const ShimmerButton = ({ className, children, variant = 'primary', ...props }: ButtonProps) => (
-  <button
-    className={cn(
-      "relative group overflow-hidden rounded-full font-bold transition-all duration-300 active:scale-95",
-      variant === 'primary' 
-        ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20 hover:shadow-slate-900/40" 
-        : "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50",
-      className
-    )}
-    {...props}
+const NAV_VARS: React.CSSProperties = {
+  // @ts-ignore
+  '--ink': '#0E0D0A',
+  '--ink-soft': '#18140D',
+  '--gold': '#BE9A5A',
+  '--gold-light': '#E9D6A6',
+  '--ivory': '#F5EFE2',
+  '--hairline': 'rgba(190,154,90,0.22)',
+};
+
+const TOPBAR_H = 36; // px, matches the animated top-strip height
+const HEADER_H_TOP = 92; // px, header height at rest
+const HEADER_H_SCROLLED = 68; // px, header height once scrolled
+
+const CrestLink = ({
+  to,
+  label,
+  active,
+  onEnter,
+}: {
+  to: string;
+  label: string;
+  active: boolean;
+  onEnter?: () => void;
+}) => (
+  <Link
+    to={to}
+    onMouseEnter={onEnter}
+    className="relative px-3 py-2 text-[12px] font-medium uppercase tracking-[0.2em] whitespace-nowrap transition-colors duration-300"
+    style={{ color: active ? 'var(--gold-light)' : 'rgba(245,239,226,0.72)' }}
   >
-    <div className="absolute inset-0 -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent z-10" />
-    <span className="relative z-20 flex items-center justify-center gap-2">
-      {children}
+    {label}
+    <span className="absolute left-1/2 -translate-x-1/2 -bottom-[3px] h-px w-full max-w-[calc(100%-16px)]">
+      <motion.span
+        className="block h-px mx-auto"
+        style={{ background: 'linear-gradient(90deg, transparent, var(--gold), transparent)' }}
+        initial={false}
+        animate={{ width: active ? '100%' : '0%', opacity: active ? 1 : 0 }}
+        transition={{ duration: 0.35, ease: [0.65, 0, 0.35, 1] }}
+      />
     </span>
-  </button>
+  </Link>
 );
 
-// ----------------------------------------------------------------------
-// 2. المكون الرئيسي (Navbar)
-// ----------------------------------------------------------------------
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  
-  // States for Dropdowns
-  const [isServicesHovered, setIsServicesHovered] = useState(false); // Desktop Hover
-  const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false); // Mobile Accordion
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const location = useLocation();
   const { scrollY } = useScroll();
   const { language, setLanguage, t, isRTL } = useLanguage();
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'ar' : 'en');
-  };
+  const toggleLanguage = () => setLanguage(language === 'en' ? 'ar' : 'en');
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const scrolled = latest > 20;
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    const scrolled = latest > 12;
     if (scrolled !== isScrolled) setIsScrolled(scrolled);
   });
 
-  useEffect(() => { 
-    setIsOpen(false); 
-    setIsMobileServicesOpen(false); // Close sub-menu on page change
+  React.useEffect(() => {
+    setIsOpen(false);
+    setIsMobileServicesOpen(false);
   }, [location.pathname]);
 
-  // تعريف التخصصات الفرعية
+  const openServices = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setIsServicesOpen(true);
+  };
+  const scheduleCloseServices = () => {
+    closeTimer.current = setTimeout(() => setIsServicesOpen(false), 150);
+  };
+
   const serviceSubLinks = [
-    { 
-      id: 'dermatology', 
-      label: language === 'en' ? 'Dermatology' : 'الجلدية والتجميل', 
+    {
+      id: 'dermatology',
+      label: language === 'en' ? 'Dermatology' : 'الجلدية والتجميل',
+      desc: language === 'en' ? 'Skin diagnostics & treatment' : 'تشخيص وعلاج البشرة',
       icon: ScanFace,
-      href: '/services/dermatology-laser' // يذهب للقسم المحدد
+      href: '/services/dermatology-laser',
     },
-    { 
-      id: 'laser', 
-      label: language === 'en' ? 'Laser Clinic' : 'عيادة الليزر', 
+    {
+      id: 'laser',
+      label: language === 'en' ? 'Laser Clinic' : 'عيادة الليزر',
+      desc: language === 'en' ? 'Hair & skin resurfacing' : 'إزالة الشعر وتجديد البشرة',
       icon: Zap,
-      href: '/services/hair-restoration' 
+      href: '/services/hair-restoration',
     },
-    { 
-      id: 'nutrition', 
-      label: language === 'en' ? 'Nutrition & Body' : 'التغذية ونحت القوام', 
+    {
+      id: 'nutrition',
+      label: language === 'en' ? 'Nutrition & Body' : 'التغذية ونحت القوام',
+      desc: language === 'en' ? 'Contouring & wellness plans' : 'نحت القوام وخطط التغذية',
       icon: Activity,
-      href: '/services/nutrition-contouring' 
+      href: '/services/nutrition-contouring',
     },
   ];
 
-  const navLinks = [
+  const leftLinks = [
     { href: '/', label: t.nav.home },
     { href: '/about-us', label: t.nav.about },
-    { href: '/services', label: t.nav.services, hasDropdown: true }, // Added Flag
+  ];
+  const rightLinks = [
     { href: '/doctors', label: t.nav.doctors },
     { href: '/offers', label: t.nav.offers },
     { href: '/contact-us', label: t.nav.contact },
   ];
+  const servicesLink = { href: '/services', label: t.nav.services };
+  const isServicesActive = location.pathname.startsWith('/services');
+
+  const panelTop = isScrolled ? HEADER_H_SCROLLED : TOPBAR_H + HEADER_H_TOP;
 
   return (
-    <>
-      {/* ======================= TOP BAR ======================= */}
+    <div style={NAV_VARS}>
+      {/* ======================= TOP STRIP ======================= */}
       <motion.div
-        className="fixed top-0 left-0 right-0 z-50 bg-[#0B1120] text-slate-300 text-[11px] sm:text-xs font-medium tracking-wide border-b border-white/5"
-        initial={{ height: 'auto', opacity: 1, y: 0 }}
-        animate={{ 
-          height: isScrolled ? 0 : '40px', 
-          opacity: isScrolled ? 0 : 1,
-          y: isScrolled ? -40 : 0
-        }}
-        transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+        className="fixed top-0 left-0 right-0 z-50 text-[11px] tracking-wide border-b overflow-hidden"
+        style={{ background: 'var(--ink)', borderColor: 'var(--hairline)' }}
+        initial={false}
+        animate={{ height: isScrolled ? 0 : TOPBAR_H, opacity: isScrolled ? 0 : 1 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
-        <div className="container mx-auto px-4 sm:px-6 h-full flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <a href="tel:0572260062" className="flex items-center gap-2 hover:text-yellow-500 transition-colors group">
-              <div className="p-1 rounded-full bg-white/5 group-hover:bg-yellow-500/10 transition-colors">
-                <Phone className="w-3 h-3 text-yellow-500" />
-              </div>
-              <span>0572260062</span>
+        <div className="container mx-auto px-4 sm:px-6 h-9 flex justify-between items-center">
+          <div className="flex items-center gap-3 sm:gap-5">
+            <a href="tel:0572260062" className="flex items-center gap-1.5" style={{ color: 'rgba(245,239,226,0.75)' }}>
+              <Phone className="w-3 h-3 shrink-0" style={{ color: 'var(--gold)' }} />
+              <span className="hidden xs:inline">0572260062</span>
             </a>
-            <span className="hidden md:flex items-center gap-2">
-              <MapPin className="w-3 h-3 text-slate-500" /> 
+            <span className="hidden md:flex items-center gap-1.5" style={{ color: 'rgba(245,239,226,0.5)' }}>
+              <MapPin className="w-3 h-3" style={{ color: 'var(--gold)' }} />
               {language === 'en' ? 'Damietta, Safwa Mall' : 'دمياط، الصفوة مول'}
             </span>
           </div>
-          <div className="flex items-center gap-4">
-             <span className="flex items-center gap-2">
-                <Clock className="w-3 h-3 text-slate-500" /> 
-                10:00 AM - 10:00 PM
-             </span>
-             <button onClick={toggleLanguage} className="lg:hidden text-xs font-bold text-white hover:text-yellow-500">
-                {language === 'en' ? 'AR' : 'EN'}
-             </button>
+          <div className="flex items-center gap-3 sm:gap-4" style={{ color: 'rgba(245,239,226,0.5)' }}>
+            <span className="hidden sm:flex items-center gap-1.5">
+              <Clock className="w-3 h-3" style={{ color: 'var(--gold)' }} />
+              10:00 AM – 10:00 PM
+            </span>
+            <button onClick={toggleLanguage} className="lg:hidden font-bold" style={{ color: 'var(--ivory)' }}>
+              {language === 'en' ? 'AR' : 'EN'}
+            </button>
           </div>
         </div>
       </motion.div>
 
-      {/* ======================= NAVBAR ======================= */}
-      <motion.header
-        className={cn(
-          "fixed left-0 right-0 z-40 transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1)",
-          isScrolled ? "top-4" : "top-[40px]" 
-        )}
+      {/* ======================= MAIN NAVBAR ======================= */}
+      <header
+        className="fixed left-0 right-0 z-40 transition-[top] duration-300"
+        style={{ top: isScrolled ? 0 : TOPBAR_H }}
+        onMouseLeave={scheduleCloseServices}
       >
-        <div className={cn(
-          "mx-auto transition-all duration-500 flex items-center justify-between",
-          isScrolled 
-            ? "container max-w-5xl bg-white/80 backdrop-blur-xl shadow-2xl shadow-slate-200/50 rounded-full px-4 py-2 border border-white/40 ring-1 ring-slate-900/5" 
-            : "container bg-transparent px-4 sm:px-6 py-5 border-b border-transparent"
-        )}>
-          
-          {/* LOGO */}
-          <Link to="/" className="relative z-10 flex items-center gap-2 group">
-             <motion.div 
-               layout 
-               className={cn("relative transition-all duration-300", isScrolled ? "w-24" : "w-32")}
-             >
-                <img src="/blogo.png" alt="SF Touch" className="w-full h-auto object-contain" />
-             </motion.div>
-          </Link>
-
-          {/* DESKTOP NAVIGATION */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-100/50 p-1.5 rounded-full border border-white/50 backdrop-blur-sm">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.href;
-              
-              // Special Logic for Services Dropdown
-              if (link.hasDropdown) {
-                return (
-                  <div 
-                    key={link.href}
-                    className="relative"
-                    onMouseEnter={() => setIsServicesHovered(true)}
-                    onMouseLeave={() => setIsServicesHovered(false)}
-                  >
-                     <Link
-                      to={link.href}
-                      className={cn(
-                        "relative px-4 py-1.5 text-sm font-medium transition-all duration-300 rounded-full z-10 flex items-center gap-1",
-                        isActive || isServicesHovered ? "text-slate-900" : "text-slate-500 hover:text-slate-900"
-                      )}
-                    >
-                      {link.label}
-                      <ChevronDown className={cn("w-3 h-3 transition-transform duration-300", isServicesHovered ? "rotate-180" : "")} />
-                      {isActive && !isServicesHovered && (
-                        <motion.div layoutId="nav-pill" className="absolute inset-0 bg-white shadow-sm rounded-full -z-10 border border-slate-200/50" />
-                      )}
-                    </Link>
-
-                    {/* Desktop Dropdown Menu */}
-                    <AnimatePresence>
-                      {isServicesHovered && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-56"
-                        >
-                          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden p-2">
-                             {serviceSubLinks.map((subItem) => (
-                               <Link
-                                 key={subItem.id}
-                                 to={subItem.href}
-                                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors group"
-                               >
-                                  <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-yellow-100 group-hover:text-yellow-600 transition-colors">
-                                     <subItem.icon className="w-4 h-4" />
-                                  </div>
-                                  <span className="text-sm font-medium">{subItem.label}</span>
-                               </Link>
-                             ))}
-                          </div>
-                        </motion.div> 
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              }
-
-              // Normal Links
-              return (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  className={cn(
-                    "relative px-4 py-1.5 text-sm font-medium transition-all duration-300 rounded-full z-10",
-                    isActive ? "text-slate-900" : "text-slate-500 hover:text-slate-900"
-                  )}
-                >
-                  {link.label}
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-pill"
-                      className="absolute inset-0 bg-white shadow-sm rounded-full -z-10 border border-slate-200/50"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* ACTIONS */}
-          <div className="flex items-center gap-3">
+        <div
+          className="w-full border-b transition-all duration-300"
+          style={{
+            background: isScrolled ? 'rgba(14,13,10,0.94)' : 'var(--ink)',
+            borderColor: 'var(--hairline)',
+            backdropFilter: isScrolled ? 'blur(12px)' : 'none',
+          }}
+        >
+          {/* ---- DESKTOP: symmetric crest grid ---- */}
+          <div
+            className={cn(
+              'hidden lg:grid container mx-auto px-4 sm:px-6 xl:px-10 items-center transition-all duration-300',
+              'grid-cols-[auto_1fr_auto_1fr_auto] gap-4 xl:gap-6',
+              isScrolled ? 'h-[68px]' : 'h-[92px]'
+            )}
+          >
+            {/* far-left bookend */}
             <button
               onClick={toggleLanguage}
-              className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-full text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200"
+              className="flex items-center gap-1.5 px-2 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors justify-self-start"
+              style={{ color: 'rgba(245,239,226,0.7)' }}
             >
               <Globe className="w-3.5 h-3.5" />
-              <span>{language === 'en' ? 'AR' : 'EN'}</span>
+              {language === 'en' ? 'AR' : 'EN'}
             </button>
-            <ShimmerButton className={cn(isScrolled ? "px-5 py-2 text-xs" : "px-6 py-2.5 text-sm")}>
+
+            {/* left wing */}
+            <nav className="flex items-center gap-1 justify-end">
+              {leftLinks.map((l) => (
+                <CrestLink key={l.href} to={l.href} label={l.label} active={location.pathname === l.href} onEnter={scheduleCloseServices} />
+              ))}
+              <span
+                onMouseEnter={openServices}
+                className="inline-flex items-center"
+              >
+                <CrestLink to={servicesLink.href} label={servicesLink.label} active={isServicesActive || isServicesOpen} />
+                <ChevronDown
+                  className="w-3 h-3 -ml-1.5 transition-transform duration-300"
+                  style={{ color: isServicesOpen ? 'var(--gold-light)' : 'rgba(245,239,226,0.5)', transform: isServicesOpen ? 'rotate(180deg)' : 'none' }}
+                />
+              </span>
+            </nav>
+
+            {/* center emblem */}
+            <Link to="/" onMouseEnter={scheduleCloseServices} className="flex flex-col items-center justify-self-center px-2">
+              <img
+                src="/blogo.png"
+                alt="SF Touch"
+                className={cn('object-contain brightness-0 invert transition-all duration-300', isScrolled ? 'w-16 xl:w-20' : 'w-20 xl:w-24')}
+              />
+              <span className="mt-1 text-[8px] xl:text-[9px] tracking-[0.3em] xl:tracking-[0.35em] uppercase whitespace-nowrap" style={{ color: 'var(--gold)' }}>
+                {language === 'en' ? 'Skin · Laser · Wellness' : 'بشرة · ليزر · تغذية'}
+              </span>
+            </Link>
+
+            {/* right wing */}
+            <nav className="flex items-center gap-1 justify-start" onMouseEnter={scheduleCloseServices}>
+              {rightLinks.map((l) => (
+                <CrestLink key={l.href} to={l.href} label={l.label} active={location.pathname === l.href} />
+              ))}
+            </nav>
+
+            {/* far-right bookend */}
+            <button
+              className="justify-self-end px-5 xl:px-6 py-2.5 text-[11px] xl:text-[12px] font-semibold uppercase tracking-[0.15em] border whitespace-nowrap transition-colors duration-300"
+              style={{ borderColor: 'var(--gold)', color: 'var(--gold-light)' }}
+              onMouseEnter={(e) => {
+                scheduleCloseServices();
+                e.currentTarget.style.background = 'var(--gold)';
+                e.currentTarget.style.color = 'var(--ink)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'var(--gold-light)';
+              }}
+            >
               {t.nav.bookAppointment}
-            </ShimmerButton>
+            </button>
+          </div>
+
+          {/* ---- MOBILE / TABLET: centered emblem, balanced hamburger ---- */}
+          <div className="lg:hidden grid grid-cols-[44px_1fr_44px] items-center container mx-auto px-4 sm:px-6 h-[68px]">
+            <span aria-hidden className="w-[44px]" />
+            <Link to="/" className="flex justify-center">
+              <img src="/blogo.png" alt="SF Touch" className="w-20 object-contain brightness-0 invert" />
+            </Link>
             <button
               onClick={() => setIsOpen(true)}
-              className="lg:hidden p-2.5 text-slate-800 bg-white rounded-full shadow-sm border border-slate-100 active:scale-90 transition-transform"
+              className="justify-self-end p-2.5 border"
+              style={{ borderColor: 'var(--hairline)', color: 'var(--ivory)' }}
+              aria-label="Open menu"
             >
               <Menu className="w-5 h-5" />
             </button>
           </div>
         </div>
-      </motion.header>
+
+        {/* ======================= CURTAIN DROPDOWN (viewport-safe) ======================= */}
+        <AnimatePresence>
+          {isServicesOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.22, ease: [0.65, 0, 0.35, 1] }}
+              onMouseEnter={openServices}
+              onMouseLeave={scheduleCloseServices}
+              className="hidden lg:block fixed left-0 right-0 z-30 border-b shadow-2xl"
+              style={{ top: panelTop, background: 'var(--ink-soft)', borderColor: 'var(--hairline)' }}
+            >
+              <div className="container mx-auto px-4 sm:px-6 xl:px-10 py-9">
+                <div className="text-center text-[10px] uppercase tracking-[0.3em] mb-6" style={{ color: 'var(--gold)' }}>
+                  {language === 'en' ? 'Our Specialties' : 'تخصصاتنا'}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-px" style={{ background: 'var(--hairline)' }}>
+                  {serviceSubLinks.map((sub) => (
+                    <Link
+                      key={sub.id}
+                      to={sub.href}
+                      onClick={() => setIsServicesOpen(false)}
+                      className="group flex flex-col items-center text-center gap-3 px-6 py-8 transition-colors hover:bg-white/[0.04]"
+                      style={{ background: 'var(--ink-soft)' }}
+                    >
+                      <div
+                        className="flex items-center justify-center w-12 h-12 rounded-full border transition-colors group-hover:border-[color:var(--gold)]"
+                        style={{ borderColor: 'var(--hairline)' }}
+                      >
+                        <sub.icon className="w-5 h-5" style={{ color: 'var(--gold)' }} />
+                      </div>
+                      <div className="text-sm font-medium" style={{ color: 'var(--ivory)' }}>{sub.label}</div>
+                      <div className="text-xs" style={{ color: 'rgba(245,239,226,0.5)' }}>{sub.desc}</div>
+                      <span
+                        className="flex items-center gap-1 text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ color: 'var(--gold)' }}
+                      >
+                        {language === 'en' ? 'Explore' : 'اعرف أكتر'}
+                        <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
 
       {/* ======================= MOBILE MENU ======================= */}
       <AnimatePresence>
         {isOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 lg:hidden"
-            />
-            
-            <motion.div
-              initial={{ x: isRTL ? '-100%' : '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: isRTL ? '-100%' : '100%' }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className={`fixed top-0 ${isRTL ? 'left-0' : 'right-0'} h-full w-[85%] max-w-[320px] bg-white z-50 lg:hidden shadow-2xl flex flex-col border-l border-slate-100`}
-            >
-              {/* Menu Header */}
-              <div className="p-6 flex justify-between items-center border-b border-slate-50">
-                <div className="w-24 opacity-80 grayscale hover:grayscale-0 transition-all">
-                   <img src="/images/logo.png" alt="SF Touch" />
-                </div>
-                <button onClick={() => setIsOpen(false)} className="p-2 bg-slate-50 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 lg:hidden flex flex-col"
+            style={{ background: 'var(--ink)' }}
+          >
+            <div className="flex justify-between items-center px-6 py-5 border-b" style={{ borderColor: 'var(--hairline)' }}>
+              <img src="/images/logo.png" alt="SF Touch" className="w-20 brightness-0 invert opacity-90" />
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-2 border transition-colors"
+                style={{ borderColor: 'var(--hairline)', color: 'var(--ivory)' }}
+                aria-label="Close menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-              {/* Menu Links */}
-              <div className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-                {navLinks.map((link, i) => {
-                  
-                  // Mobile Dropdown Logic
-                  if (link.hasDropdown) {
-                    return (
-                      <motion.div
-                        key={link.href}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 + (i * 0.05) }}
-                        className="bg-slate-50/50 rounded-2xl overflow-hidden"
-                      >
-                         <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}>
-                            <span className={cn("text-base font-medium", location.pathname === link.href ? "text-slate-900" : "text-slate-600")}>
-                               {link.label}
-                            </span>
-                            <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform duration-300", isMobileServicesOpen ? "rotate-180" : "")} />
-                         </div>
+            <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col">
+              {[leftLinks[0], leftLinks[1], servicesLink, ...rightLinks].map((link, i) => {
+                const isActive = link.href === servicesLink.href ? isServicesActive : location.pathname === link.href;
+                const hasDropdown = link.href === servicesLink.href;
 
-                         {/* Sub-menu Animation */}
-                         <AnimatePresence>
-                           {isMobileServicesOpen && (
-                             <motion.div
-                               initial={{ height: 0, opacity: 0 }}
-                               animate={{ height: 'auto', opacity: 1 }}
-                               exit={{ height: 0, opacity: 0 }}
-                               className="overflow-hidden"
-                             >
-                                <div className="px-4 pb-4 space-y-1">
-                                   {serviceSubLinks.map((subLink) => (
-                                      <Link
-                                        key={subLink.id}
-                                        to={subLink.href}
-                                        onClick={() => setIsOpen(false)}
-                                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-white text-slate-500 hover:text-slate-900 transition-all text-sm"
-                                      >
-                                         <subLink.icon className="w-4 h-4" />
-                                         {subLink.label}
-                                      </Link>
-                                   ))}
-                                   <Link
-                                      to="/services"
-                                      onClick={() => setIsOpen(false)}
-                                      className="flex items-center gap-2 p-3 mt-2 text-xs font-bold text-yellow-600 uppercase tracking-wider justify-center bg-yellow-50 rounded-xl"
-                                   >
-                                      {language === 'en' ? 'View All Services' : 'عرض كل الخدمات'}
-                                      <ArrowRight className="w-3 h-3" />
-                                   </Link>
-                                </div>
-                             </motion.div>
-                           )}
-                         </AnimatePresence>
-                      </motion.div>
-                    );
-                  }
-
-                  // Standard Mobile Links
+                if (hasDropdown) {
                   return (
                     <motion.div
                       key={link.href}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 + (i * 0.05) }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 + i * 0.04 }}
+                      className="border-b"
+                      style={{ borderColor: 'var(--hairline)' }}
                     >
-                      <Link
-                        to={link.href}
-                        onClick={() => setIsOpen(false)}
-                        className={cn(
-                          "group flex items-center justify-between p-4 rounded-2xl text-base font-medium transition-all duration-300",
-                          location.pathname === link.href 
-                            ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20" 
-                            : "text-slate-600 hover:bg-slate-50"
+                      <div className="flex items-center justify-between py-4 cursor-pointer" onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}>
+                        <span className="text-xl tracking-wide" style={{ color: 'var(--ivory)' }}>{link.label}</span>
+                        <ChevronDown
+                          className="w-4 h-4 transition-transform duration-300"
+                          style={{ color: 'var(--gold)', transform: isMobileServicesOpen ? 'rotate(180deg)' : 'none' }}
+                        />
+                      </div>
+                      <AnimatePresence>
+                        {isMobileServicesOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="pb-4 flex flex-col gap-1">
+                              {serviceSubLinks.map((sub) => (
+                                <Link
+                                  key={sub.id}
+                                  to={sub.href}
+                                  onClick={() => setIsOpen(false)}
+                                  className="flex items-center gap-3 py-2.5"
+                                >
+                                  <sub.icon className="w-4 h-4 shrink-0" style={{ color: 'var(--gold)' }} />
+                                  <span className="text-[15px]" style={{ color: 'rgba(245,239,226,0.75)' }}>{sub.label}</span>
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
                         )}
-                      >
-                        <span>{link.label}</span>
-                        {location.pathname === link.href && <ArrowRight className="w-4 h-4" />}
-                      </Link>
+                      </AnimatePresence>
                     </motion.div>
                   );
-                })}
-              </div>
+                }
 
-              {/* Menu Footer */}
-              <div className="p-6 bg-slate-50 border-t border-slate-100 space-y-4">
-                  <div className="flex items-center justify-between text-sm text-slate-500">
-                    <span>Language</span>
-                    <button onClick={toggleLanguage} className="font-bold text-slate-900 px-3 py-1 bg-white rounded-md border shadow-sm">
-                       {language === 'en' ? 'Arabic' : 'English'}
-                    </button>
-                  </div>
-                  <ShimmerButton className="w-full py-4 text-base">
-                     {t.nav.bookAppointment}
-                  </ShimmerButton>
+                return (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 + i * 0.04 }}
+                    className="border-b"
+                    style={{ borderColor: 'var(--hairline)' }}
+                  >
+                    <Link to={link.href} onClick={() => setIsOpen(false)} className="flex items-center justify-between py-4">
+                      <span className="text-xl tracking-wide" style={{ color: isActive ? 'var(--gold-light)' : 'var(--ivory)' }}>
+                        {link.label}
+                      </span>
+                      {isActive && <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--gold)' }} />}
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="px-6 py-6 border-t flex flex-col gap-4" style={{ borderColor: 'var(--hairline)' }}>
+              <div className="flex items-center justify-between text-sm" style={{ color: 'rgba(245,239,226,0.5)' }}>
+                <span>{language === 'en' ? 'Language' : 'اللغة'}</span>
+                <button onClick={toggleLanguage} className="font-semibold px-3 py-1.5 border" style={{ color: 'var(--ivory)', borderColor: 'var(--hairline)' }}>
+                  {language === 'en' ? 'العربية' : 'English'}
+                </button>
               </div>
-            </motion.div>
-          </>
+              <button
+                className="w-full py-4 text-sm font-semibold uppercase tracking-[0.15em] border"
+                style={{ borderColor: 'var(--gold)', color: 'var(--gold-light)' }}
+              >
+                {t.nav.bookAppointment}
+              </button>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 

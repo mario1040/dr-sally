@@ -120,7 +120,7 @@ export const translations: Record<Language, TranslationContent> = {
       home: 'Home',
       about: 'About Us',
       services: 'Services',
-      doctors: 'Our Doctors',
+      doctors: 'Doctor',
       offers: 'Offers',
       contact: 'Contact Us',
       bookAppointment: 'Book Appointment',

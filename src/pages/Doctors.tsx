@@ -50,7 +50,7 @@ const DoctorProfile = () => {
             <div className="relative w-full max-w-md h-[600px] lg:h-[750px] rounded-t-[20rem] rounded-b-[4rem] overflow-hidden shadow-2xl shadow-slate-300/60 ring-1 ring-black/5 group">
                {/* مسار صورة الدكتورة فريحان */}
                <img 
-                 src="images/sally2.png" 
+                 src="images/OES02416 (1).jpg" 
                  alt={isRTL ? "د. سالي العدوي" : "Dr. Sally El Adawy"} 
                  className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
                  onError={(e) => {
