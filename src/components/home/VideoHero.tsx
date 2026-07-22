@@ -1,363 +1,428 @@
 "use client";
 
-import React from "react";
-import { motion, Variants, useMotionValue, useTransform } from "framer-motion";
+import React, { useRef } from "react";
+import {
+  motion,
+  Variants,
+  useMotionValue,
+  useTransform,
+  useSpring,
+  useReducedMotion,
+} from "framer-motion";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-ArrowRight,
-ArrowLeft,
-Sparkles,
-Star,
-ShieldCheck,
-HeartPulse,
-BadgeCheck,
-SunMedium,
-MoveUpRight,
+  ArrowRight,
+  ArrowLeft,
+  Sparkles,
+  Star,
+  ShieldCheck,
+  HeartPulse,
+  BadgeCheck,
 } from "lucide-react";
 
+/**
+ * ── Design notes ──────────────────────────────────────────────────────────
+ * Palette   #FAF6F0 ivory · #211D19 ink · #B8874A gold · #A24B3B clay
+ *           #4A2436 plum   · #F0E4D6 porcelain
+ * Type      Fraunces (display, editorial serif) / Manrope (body)
+ *           / IBM Plex Mono (clinical labels — precision motif)
+ * Signature The "light chamber": a true CSS-3D perspective stage where the
+ *           portrait sits on a glass plane flanked by two floating panels
+ *           at different Z-depths, all swaying together as one object when
+ *           the cursor moves — plus a slow light-sweep across the glass.
+ * ───────────────────────────────────────────────────────────────────────── */
+
 const EditorialHeroSection = () => {
-const { t, isRTL } = useLanguage();
-const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+  const { t, isRTL } = useLanguage();
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+  const prefersReducedMotion = useReducedMotion();
 
-const mouseX = useMotionValue(0);
-const mouseY = useMotionValue(0);
+  // ── global cursor field (drives the 3D chamber + parallax orbs) ──
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 60, damping: 18, mass: 0.4 });
+  const sy = useSpring(my, { stiffness: 60, damping: 18, mass: 0.4 });
 
-const rotateX = useTransform(mouseY, [-0.5, 0.5], [9, -9]);
-const rotateY = useTransform(mouseX, [-0.5, 0.5], [-9, 9]);
+  const stageRotateX = useTransform(sy, [-0.5, 0.5], [10, -10]);
+  const stageRotateY = useTransform(sx, [-0.5, 0.5], [-12, 12]);
+  const orbShiftX = useTransform(sx, [-0.5, 0.5], [-24, 24]);
+  const orbShiftY = useTransform(sy, [-0.5, 0.5], [-24, 24]);
 
-const container: Variants = {
-hidden: { opacity: 0 },
-visible: {
-opacity: 1,
-transition: {
-staggerChildren: 0.12,
-delayChildren: 0.1,
-},
-},
-};
+  const handleFieldMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    mx.set((e.clientX - r.left) / r.width - 0.5);
+    my.set((e.clientY - r.top) / r.height - 0.5);
+  };
+  const resetField = () => {
+    mx.set(0);
+    my.set(0);
+  };
 
-const fadeUp: Variants = {
-hidden: { opacity: 0, y: 28 },
-visible: {
-opacity: 1,
-y: 0,
-transition: {
-duration: 0.85,
-ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-},
-},
-};
+  // ── magnetic CTA ──
+  const btnRef = useRef<HTMLDivElement>(null);
+  const bx = useMotionValue(0);
+  const by = useMotionValue(0);
+  const bxs = useSpring(bx, { stiffness: 220, damping: 18 });
+  const bys = useSpring(by, { stiffness: 220, damping: 18 });
+  const handleBtnMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    bx.set(((e.clientX - r.left) / r.width - 0.5) * 18);
+    by.set(((e.clientY - r.top) / r.height - 0.5) * 18);
+  };
+  const resetBtn = () => {
+    bx.set(0);
+    by.set(0);
+  };
 
-const smallCards = [
-{
-title: isRTL ? "دقة طبية" : "Medical Precision",
-desc: isRTL ? "تفاصيل محسوبة ونتائج هادئة." : "Measured detail, calm results.",
-icon: ShieldCheck,
-},
-{
-title: isRTL ? "جمال طبيعي" : "Natural Beauty",
-desc: isRTL ? "لمسة أنيقة بلا مبالغة." : "Elegant, never exaggerated.",
-icon: Sparkles,
-},
-{
-title: isRTL ? "رعاية متقدمة" : "Advanced Care",
-desc: isRTL ? "خبرة واضحة وثقة حقيقية." : "Clear expertise, real trust.",
-icon: HeartPulse,
-},
-];
+  const container: Variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.12 } },
+  };
+  const fadeUp: Variants = {
+    hidden: { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+    },
+  };
+  const wordIn: Variants = {
+    hidden: { opacity: 0, y: 40, rotateX: -50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+    },
+  };
 
-const heroImage = "/images/OES02643.jpg"; // غيّر المسار حسب صورة الدكتورة
+  const headlineTop = isRTL ? "سالي" : "Dr. Sally";
+  const headlineBottomWords = isRTL
+    ? ["بطابع", "فني", "لا", "يُنسى"]
+    : ["Sculpted", "in", "quiet", "light"];
 
-const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
-const rect = e.currentTarget.getBoundingClientRect();
-const x = (e.clientX - rect.left) / rect.width - 0.5;
-const y = (e.clientY - rect.top) / rect.height - 0.5;
-mouseX.set(x);
-mouseY.set(y);
-};
+  const specimens = [
+    {
+      label: isRTL ? "دقة طبية" : "Precision",
+      note: isRTL ? "تفاصيل محسوبة" : "Measured detail",
+      icon: ShieldCheck,
+    },
+    {
+      label: isRTL ? "جمال طبيعي" : "Beauty",
+      note: isRTL ? "بلا مبالغة" : "Never exaggerated",
+      icon: Sparkles,
+    },
+    {
+      label: isRTL ? "رعاية" : "Care",
+      note: isRTL ? "ثقة حقيقية" : "Real trust",
+      icon: HeartPulse,
+    },
+  ];
 
-const resetMove = () => {
-mouseX.set(0);
-mouseY.set(0);
-};
+  const marqueeWords = isRTL
+    ? ["بوتوكس", "فيلر", "تجديد البشرة", "ليزر", "هيدرافيشل", "تقشير كيميائي"]
+    : ["BOTOX", "FILLERS", "SKIN RESURFACING", "LASER THERAPY", "HYDRAFACIAL", "CHEMICAL PEELS"];
 
-return ( <section className="relative min-h-[100svh] overflow-hidden bg-[#fffaf4] text-slate-900 pt-28 lg:pt-32 ">
-{/* Background */} <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.98),rgba(255,250,244,1)_35%,rgba(246,237,226,1)_100%)]" /> <div className="absolute -top-28 left-[-9rem] h-[30rem] w-[30rem] rounded-full bg-amber-200/35 blur-3xl" /> <div className="absolute right-[-9rem] top-10 h-[26rem] w-[26rem] rounded-full bg-rose-200/30 blur-3xl" /> <div className="absolute bottom-[-10rem] left-1/3 h-[30rem] w-[30rem] rounded-full bg-white/75 blur-3xl" /> <div className="absolute inset-0 opacity-[0.18] [background-image:linear-gradient(rgba(120,120,120,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(120,120,120,0.08)_1px,transparent_1px)] [background-size:48px_48px]" />
+  const heroImage = "/images/OES02643.jpg";
 
-  <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl items-center px-4 py-16 sm:px-6 lg:px-8">
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="visible"
-      className="w-full"
+  return (
+    <section
+      dir={isRTL ? "rtl" : "ltr"}
+      className="relative min-h-[100svh] overflow-hidden bg-[#FAF6F0] text-[#211D19] pt-28 lg:pt-32"
+      style={{ fontFamily: "'Manrope', ui-sans-serif, system-ui" }}
     >
-      {/* Badge */}
-      <motion.div variants={fadeUp} className="mb-8 flex justify-center lg:justify-start">
-        <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/80 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-amber-700 shadow-[0_12px_30px_rgba(150,110,60,0.1)] backdrop-blur-md">
-          <SunMedium className="h-4 w-4" />
-          {isRTL ? "سكشن بصري مختلف" : "A Different Visual Section"}
-        </div>
-      </motion.div>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,420;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+        .eh-display { font-family: 'Fraunces', ui-serif, Georgia, serif; }
+        .eh-mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+        @keyframes eh-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes eh-marquee-rtl { from { transform: translateX(0); } to { transform: translateX(50%); } }
+        @keyframes eh-sweep { 0% { transform: translate(-30%, -30%) rotate(18deg); } 100% { transform: translate(30%, 30%) rotate(18deg); } }
+        .eh-marquee-track { animation: eh-marquee 26s linear infinite; }
+        .eh-marquee-track.rtl { animation-name: eh-marquee-rtl; }
+        .eh-sweep { animation: eh-sweep 7s ease-in-out infinite alternate; }
+        @media (prefers-reduced-motion: reduce) {
+          .eh-marquee-track, .eh-sweep { animation: none !important; }
+        }
+      `}</style>
 
-      <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-        {/* Left editorial text block */}
-        <motion.div variants={fadeUp} className="order-2 lg:order-1">
-          <div className="max-w-xl">
-            <h1 className="text-5xl font-bold leading-[1.02] tracking-tight text-slate-900 md:text-6xl lg:text-[5.4rem]">
-              {isRTL ? (
-                <>
-                  سالي
-                  <br />
-                  <span className="relative inline-block">
-                    <span className="relative z-10 bg-gradient-to-r from-amber-500 via-orange-400 to-rose-400 bg-clip-text text-transparent">
-                      بطابع فني
-                    </span>
-                    <span className="absolute bottom-3 left-0 right-0 h-4 rounded-full bg-amber-200/60 blur-md" />
-                  </span>
-                </>
-              ) : (
-                <>
-                  Dr. Sally
-                  <br />
-                  <span className="relative inline-block">
-                    <span className="relative z-10 bg-gradient-to-r from-amber-500 via-orange-400 to-rose-400 bg-clip-text text-transparent">
-                      in an Editorial Mood
-                    </span>
-                    <span className="absolute bottom-3 left-0 right-0 h-4 rounded-full bg-amber-200/60 blur-md" />
-                  </span>
-                </>
-              )}
-            </h1>
+      {/* ── background field ── */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff,#FAF6F0_38%,#F0E4D6_100%)]" />
+      <div
+        className="absolute inset-0 opacity-[0.35]"
+        style={{
+          clipPath: isRTL
+            ? "polygon(0 0, 38% 0, 22% 100%, 0 100%)"
+            : "polygon(100% 0, 62% 0, 78% 100%, 100% 100%)",
+          background: "linear-gradient(180deg,#211D19,#4A2436)",
+        }}
+      />
+      <motion.div
+        style={{ x: orbShiftX, y: orbShiftY }}
+        className="absolute -top-24 left-[-8rem] h-[26rem] w-[26rem] rounded-full bg-[#B8874A]/25 blur-3xl"
+      />
+      <motion.div
+        style={{ x: useTransform(orbShiftX, (v) => -v), y: useTransform(orbShiftY, (v) => -v) }}
+        className="absolute right-[-8rem] top-6 h-[24rem] w-[24rem] rounded-full bg-[#A24B3B]/20 blur-3xl"
+      />
+      <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(rgba(33,29,25,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(33,29,25,0.12)_1px,transparent_1px)] [background-size:44px_44px]" />
 
-            <p className="mt-6 text-base leading-8 text-slate-600 md:text-lg">
-              {t.hero.description ||
-                (isRTL
-                  ? "بدل layout تقليدي، الهيرو هنا مبني كقطعة فنية: صورة أكبر، عمق بصري، وطبقات ضوء ناعمة تحافظ على وضوح الوجه وتخلي التصميم أفخم."
-                  : "Instead of a standard layout, this hero feels like an art piece: a larger portrait, soft depth, and layered light that keeps the face clear while making the design feel premium.") }
-            </p>
-
-            <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-amber-200/70 bg-amber-50 px-4 py-2 text-xs font-semibold tracking-[0.18em] text-amber-800">
-                {isRTL ? "جمال طبيعي" : "Natural Beauty"}
-              </span>
-              <span className="rounded-full border border-amber-200/70 bg-amber-50 px-4 py-2 text-xs font-semibold tracking-[0.18em] text-amber-800">
-                {isRTL ? "نتائج هادئة" : "Soft Results"}
-              </span>
-              <span className="rounded-full border border-amber-200/70 bg-amber-50 px-4 py-2 text-xs font-semibold tracking-[0.18em] text-amber-800">
-                {isRTL ? "رعاية دقيقة" : "Precision Care"}
-              </span>
-            </motion.div>
-
-            <motion.div variants={fadeUp} className="mt-10 flex flex-wrap items-center gap-4">
-              <Link to="/contact-us" className="group inline-flex">
-                <motion.div
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="inline-flex items-center gap-3 rounded-full bg-slate-900 px-7 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_50px_rgba(15,23,42,0.18)]"
-                >
-                  {t.hero.cta || (isRTL ? "احجزي الآن" : "Book Now")}
-                  <ArrowIcon className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
-                </motion.div>
-              </Link>
-
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-md">
-                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                {isRTL ? "تجربة راقية من أول نظرة" : "Elegant from the first glance"}
-              </div>
-            </motion.div>
-
-            <motion.div variants={fadeUp} className="mt-12 grid gap-3 sm:grid-cols-3">
-              {smallCards.map((card) => {
-                const Icon = card.icon;
-                return (
-                  <motion.div
-                    key={card.title}
-                    whileHover={{ y: -4, scale: 1.01 }}
-                    className="rounded-[1.4rem] border border-white/80 bg-white/82 p-4 shadow-[0_14px_40px_rgba(120,90,50,0.08)] backdrop-blur-md"
-                  >
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div className="text-sm font-bold text-slate-900">{card.title}</div>
-                    <div className="mt-1 text-xs leading-5 text-slate-600">{card.desc}</div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Right portrait stage - bigger and clear */}
-        <motion.div
-          variants={fadeUp}
-          className="order-1 lg:order-2"
-          onMouseMove={handleMove}
-          onMouseLeave={resetMove}
+      {/* ── vertical museum placard ── */}
+      <div
+        className={`absolute top-1/2 z-20 hidden -translate-y-1/2 lg:block ${isRTL ? "right-4" : "left-4"}`}
+      >
+        <div
+          className="eh-mono whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.4em] text-[#4A2436]/70"
+          style={{ writingMode: "vertical-rl", transform: isRTL ? "rotate(0deg)" : "rotate(180deg)" }}
         >
-          <div className="relative mx-auto max-w-[720px]">
-            {/* Big halo */}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-              className="absolute left-1/2 top-1/2 h-[660px] w-[660px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-200/75 border-dashed opacity-60"
-            />
-            <motion.div
-              animate={{ rotate: -360 }}
-              transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-              className="absolute left-1/2 top-1/2 h-[510px] w-[510px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-rose-200/70 border-dashed opacity-55"
-            />
-
-            {/* Main portrait card */}
-            <motion.div
-              style={{
-                rotateX,
-                rotateY,
-                transformStyle: "preserve-3d",
-              }}
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="relative mx-auto w-[min(100%,520px)] overflow-hidden rounded-[2.9rem] border border-white/90 bg-white shadow-[0_28px_90px_rgba(120,90,50,0.18)]"
-            >
-              <div className="absolute inset-0 z-10 bg-[linear-gradient(to_top,rgba(255,255,255,0.18),transparent_25%,transparent_70%,rgba(255,255,255,0.20))]" />
-              <div className="absolute inset-x-0 bottom-0 z-10 h-44 bg-[linear-gradient(to_top,rgba(255,246,236,0.95),transparent)]" />
-
-              <img
-                src={heroImage}
-                alt="Dr. Sally"
-                className="h-[720px] w-full object-cover object-top"
-              />
-
-              {/* name plate */}
-              <div className="absolute bottom-6 left-6 z-20 rounded-full border border-white/80 bg-white/85 px-5 py-3 shadow-[0_10px_30px_rgba(120,90,50,0.08)] backdrop-blur-md">
-                <div className="text-xs font-bold uppercase tracking-[0.22em] text-amber-700">
-                  {isRTL ? "الدكتورة سالي" : "Dr. Sally"}
-                </div>
-                <div className="mt-1 text-[11px] font-medium tracking-[0.14em] text-slate-600">
-                  {isRTL ? "Cosmetic Dermatology" : "Cosmetic Dermatology"}
-                </div>
-              </div>
-
-              {/* glow edge */}
-              <div className="pointer-events-none absolute inset-0 rounded-[2.9rem] border border-white/70" />
-            </motion.div>
-
-            {/* Cards placed outside the face area */}
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.7 }}
-              className="absolute -left-2 top-14 hidden w-[190px] rounded-[1.25rem] border border-white/80 bg-white/88 p-4 shadow-[0_18px_50px_rgba(120,90,50,0.1)] backdrop-blur-md xl:block"
-            >
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-                  <ShieldCheck className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-slate-900">
-                    {isRTL ? "دقة طبية" : "Medical Precision"}
-                  </div>
-                  <div className="mt-1 text-xs leading-5 text-slate-600">
-                    {isRTL ? "بعيدًا عن الوجه ومثبتة على الهامش." : "Placed safely off the face area."}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.7 }}
-              className="absolute -right-4 top-28 hidden w-[190px] rounded-[1.25rem] border border-white/80 bg-white/88 p-4 shadow-[0_18px_50px_rgba(120,90,50,0.1)] backdrop-blur-md xl:block"
-            >
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
-                  <Sparkles className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-slate-900">
-                    {isRTL ? "جمال طبيعي" : "Natural Glow"}
-                  </div>
-                  <div className="mt-1 text-xs leading-5 text-slate-600">
-                    {isRTL ? "التفاصيل تبقى واضحة والصورة أكبر." : "Bigger portrait, cleaner composition."}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55, duration: 0.7 }}
-              className="absolute -bottom-6 left-10 hidden w-[210px] rounded-[1.25rem] border border-white/80 bg-white/88 p-4 shadow-[0_18px_50px_rgba(120,90,50,0.1)] backdrop-blur-md xl:block"
-            >
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-                  <BadgeCheck className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-slate-900">
-                    {isRTL ? "تجربة موثوقة" : "Trusted Experience"}
-                  </div>
-                  <div className="mt-1 text-xs leading-5 text-slate-600">
-                    {isRTL ? "كروت جانبية، لا تحجب الوجه." : "Side cards only, no face overlap."}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.7 }}
-              className="absolute -bottom-8 right-10 hidden rounded-full border border-white/80 bg-white/90 px-5 py-3 text-xs font-bold uppercase tracking-[0.22em] text-slate-700 shadow-[0_12px_30px_rgba(120,90,50,0.08)] backdrop-blur-md lg:inline-flex"
-            >
-              <div className="flex items-center gap-2">
-                <MoveUpRight className="h-4 w-4 text-amber-600" />
-                {isRTL ? "Visual Storytelling" : "Visual Storytelling"}
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
+          {isRTL ? "قطعة رقم ٠١ — الدكتورة سالي" : "Specimen No. 01 — Dr. Sally"}
+        </div>
       </div>
 
-      {/* Bottom ribbon */}
-      <motion.div
-        variants={fadeUp}
-        className="mt-14 flex flex-col gap-4 rounded-[2rem] border border-white/80 bg-white/78 px-5 py-4 shadow-[0_14px_40px_rgba(120,90,50,0.08)] backdrop-blur-md md:flex-row md:items-center md:justify-between"
+      {/* ── marquee ticker ── */}
+      <div className="absolute left-0 right-0 top-50 z-20 overflow-hidden border-y border-[#211D19]/10 bg-[#211D19] py-2">
+        <div className={`eh-marquee-track flex w-max gap-8 ${isRTL ? "rtl" : ""}`}>
+          {[...marqueeWords, ...marqueeWords].map((w, i) => (
+            <span
+              key={i}
+              className="eh-mono flex items-center gap-8 text-[11px] font-medium uppercase tracking-[0.3em] text-[#F0E4D6]/80"
+            >
+              {w}
+              <span className="text-[#B8874A]">✦</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div
+        className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl items-center px-4 py-16 sm:px-6 lg:px-8"
+        onMouseMove={handleFieldMove}
+        onMouseLeave={resetField}
       >
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-            <HeartPulse className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="text-sm font-bold text-slate-900">
-              {isRTL ? "Hero مختلف فعلًا" : "A truly different hero"}
-            </div>
-            <div className="text-xs text-slate-600">
-              {isRTL
-                ? "أكبر صورة، كروت خارج الوجه، وإحساس مجلات فاخرة."
-                : "Bigger portrait, cards away from the face, and an editorial luxury feel."}
-            </div>
-          </div>
-        </div>
+        <motion.div variants={container} initial="hidden" animate="visible" className="w-full">
+          <div className="grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
+            {/* ── left: kinetic editorial text ── */}
+            <div className="order-2 lg:order-1">
+              <div className="max-w-xl">
+                <motion.div variants={fadeUp} className="mb-6 flex items-center gap-3">
+                  <span className="eh-mono text-[11px] font-semibold uppercase tracking-[0.35em] text-[#A24B3B]">
+                    {isRTL ? "قسم بصري تحريري" : "Editorial Feature"}
+                  </span>
+                  <span className="h-px flex-1 bg-[#211D19]/15" />
+                </motion.div>
 
-        <div className="flex items-center gap-2 text-sm text-slate-700">
-          <div className="flex items-center gap-1 text-amber-500">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Star key={i} className="h-3.5 w-3.5 fill-current" />
-            ))}
-          </div>
-          <span className="font-medium">
-            {isRTL ? "مناسب للواجهة البيضاء" : "Perfect for a light interface"}
-          </span>
-        </div>
-      </motion.div>
-    </motion.div>
-  </div>
-</section>
+                <h1
+                  className="eh-display text-6xl leading-[0.98] tracking-tight text-[#211D19] md:text-7xl lg:text-[6rem]"
+                  style={{ perspective: 800 }}
+                >
+                  <motion.span variants={wordIn} className="block font-semibold">
+                    {headlineTop}
+                  </motion.span>
+                  <span className="mt-1 flex flex-wrap gap-x-4 italic text-[#A24B3B]">
+                    {headlineBottomWords.map((w, i) => (
+                      <motion.span key={i} variants={wordIn} className="inline-block font-medium">
+                        {w}
+                      </motion.span>
+                    ))}
+                  </span>
+                </h1>
 
-);
+                <motion.p variants={fadeUp} className="mt-7 text-base leading-8 text-[#211D19]/70 md:text-lg">
+                  {t.hero.description ||
+                    (isRTL
+                      ? "بدل الـ layout التقليدي، الهيرو هنا مبني كقطعة فنية معروضة داخل غرفة ضوء زجاجية: عمق حقيقي، انعكاسات ناعمة، ووجه واضح دايمًا في المنتصف."
+                      : "Instead of a standard layout, this hero is staged like an artifact inside a glass light-chamber: real depth, soft reflections, and a face that always stays perfectly clear at the center.")}
+                </motion.p>
+
+                <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center gap-4">
+                  <div
+                    ref={btnRef}
+                    onMouseMove={handleBtnMove}
+                    onMouseLeave={resetBtn}
+                    className="inline-block"
+                  >
+                    <Link to="/contact-us" className="group inline-flex">
+                      <motion.div
+                        style={{ x: bxs, y: bys }}
+                        whileTap={{ scale: 0.96 }}
+                        className="inline-flex items-center gap-3 rounded-full bg-[#211D19] px-7 py-4 text-sm font-bold uppercase tracking-[0.18em] text-[#FAF6F0] shadow-[0_18px_50px_rgba(33,29,25,0.28)]"
+                      >
+                        {t.hero.cta || (isRTL ? "احجزي الآن" : "Book Now")}
+                        <ArrowIcon className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                      </motion.div>
+                    </Link>
+                  </div>
+
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#211D19]/10 bg-white/70 px-4 py-3 text-sm font-semibold text-[#211D19]/80 shadow-sm backdrop-blur-md">
+                    <Star className="h-4 w-4 fill-[#B8874A] text-[#B8874A]" />
+                    {isRTL ? "تجربة راقية من أول نظرة" : "Elegant from the first glance"}
+                  </div>
+                </motion.div>
+
+                {/* specimen strip — not a numbered sequence, just three facets */}
+                <motion.div variants={fadeUp} className="mt-12 flex flex-col divide-y divide-[#211D19]/10 border-y border-[#211D19]/10">
+                  {specimens.map((s) => {
+                    const Icon = s.icon;
+                    return (
+                      <div key={s.label} className="flex items-center gap-4 py-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F0E4D6] text-[#A24B3B]">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <div className="eh-display text-base font-semibold text-[#211D19]">{s.label}</div>
+                        <div className="eh-mono ms-auto text-[11px] uppercase tracking-[0.2em] text-[#211D19]/50">
+                          {s.note}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              </div>
+            </div>
+
+            {/* ── right: the light chamber (true 3D stage) ── */}
+            <motion.div variants={fadeUp} className="order-1 lg:order-2">
+              <div className="relative mx-auto max-w-[640px]" style={{ perspective: 1600 }}>
+                {/* orbit rings */}
+                {!prefersReducedMotion && (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                      className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#B8874A]/40 opacity-70"
+                    />
+                    <motion.div
+                      animate={{ rotate: -360 }}
+                      transition={{ duration: 55, repeat: Infinity, ease: "linear" }}
+                      className="absolute left-1/2 top-1/2 h-[470px] w-[470px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#A24B3B]/30 opacity-60"
+                    />
+                  </>
+                )}
+
+                {/* 3D group: rotates as one object with the cursor */}
+                <motion.div
+                  style={{
+                    rotateX: prefersReducedMotion ? 0 : stageRotateX,
+                    rotateY: prefersReducedMotion ? 0 : stageRotateY,
+                    transformStyle: "preserve-3d",
+                  }}
+                  className="relative mx-auto w-[min(100%,480px)]"
+                >
+                  {/* back glass plate — recedes into the scene */}
+                  <div
+                    style={{ transform: "translateZ(-90px) translateX(6%) rotateY(14deg)", transformStyle: "preserve-3d" }}
+                    className="absolute inset-6 hidden rounded-[2.4rem] border border-white/70 bg-white/40 shadow-[0_30px_80px_rgba(74,36,54,0.15)] backdrop-blur-sm md:block"
+                  />
+                  {/* mid glass plate */}
+                  <div
+                    style={{ transform: "translateZ(-40px) translateX(-4%) rotateY(-8deg)", transformStyle: "preserve-3d" }}
+                    className="absolute inset-3 hidden rounded-[2.6rem] border border-white/80 bg-[#F0E4D6]/50 shadow-[0_24px_60px_rgba(184,135,74,0.14)] backdrop-blur-sm md:block"
+                  />
+
+                  {/* front plane — the portrait itself, forward in Z */}
+                  <div
+                    style={{ transform: "translateZ(40px)" }}
+                    className="relative overflow-hidden rounded-[2.6rem] border border-white/90 bg-white shadow-[0_32px_100px_rgba(33,29,25,0.25)]"
+                  >
+                    <img
+                      src={heroImage}
+                      alt={isRTL ? "الدكتورة سالي" : "Dr. Sally"}
+                      className="h-[680px] w-full object-cover object-top"
+                    />
+                    {/* light sweep across the glass */}
+                    {!prefersReducedMotion && (
+                      <div
+                        className="eh-sweep pointer-events-none absolute -inset-1/2 h-[200%] w-[200%] opacity-40"
+                        style={{
+                          background:
+                            "linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.65) 50%, transparent 60%)",
+                        }}
+                      />
+                    )}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(33,29,25,0.55),transparent)]" />
+
+                    {/* nameplate */}
+                    <div className="absolute bottom-6 left-6 z-20 rounded-full border border-white/30 bg-white/15 px-5 py-3 backdrop-blur-md">
+                      <div className="eh-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-[#F0E4D6]">
+                        {isRTL ? "الدكتورة سالي" : "Dr. Sally"}
+                      </div>
+                      <div className="mt-1 text-[11px] font-medium tracking-[0.1em] text-white/80">
+                        {isRTL ? "جلدية تجميلية" : "Cosmetic Dermatology"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* floating facet plates — forward of the portrait in Z */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.7 }}
+                    style={{ transform: "translateZ(90px)" }}
+                    className="absolute -left-6 top-16 hidden w-[176px] rounded-[1.2rem] border border-white/80 bg-white/90 p-4 shadow-[0_20px_50px_rgba(33,29,25,0.16)] backdrop-blur-md xl:block"
+                  >
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F0E4D6] text-[#A24B3B]">
+                      <ShieldCheck className="h-4 w-4" />
+                    </div>
+                    <div className="eh-display mt-2 text-sm font-semibold text-[#211D19]">
+                      {isRTL ? "دقة طبية" : "Precision"}
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.45, duration: 0.7 }}
+                    style={{ transform: "translateZ(70px)" }}
+                    className="absolute -right-8 top-32 hidden w-[176px] rounded-[1.2rem] border border-white/80 bg-white/90 p-4 shadow-[0_20px_50px_rgba(33,29,25,0.16)] backdrop-blur-md xl:block"
+                  >
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F0E4D6] text-[#A24B3B]">
+                      <BadgeCheck className="h-4 w-4" />
+                    </div>
+                    <div className="eh-display mt-2 text-sm font-semibold text-[#211D19]">
+                      {isRTL ? "تجربة موثوقة" : "Trusted"}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* ── bottom ribbon ── */}
+          <motion.div
+            variants={fadeUp}
+            className="mt-14 flex flex-col gap-4 rounded-[2rem] border border-[#211D19]/10 bg-white/70 px-5 py-4 shadow-[0_14px_40px_rgba(33,29,25,0.08)] backdrop-blur-md md:flex-row md:items-center md:justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F0E4D6] text-[#A24B3B]">
+                <HeartPulse className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="eh-display text-sm font-semibold text-[#211D19]">
+                  {isRTL ? "Hero مختلف فعلًا" : "A hero unlike the rest"}
+                </div>
+                <div className="text-xs text-[#211D19]/60">
+                  {isRTL
+                    ? "غرفة ضوء ثلاثية الأبعاد، تحريك حركي، وإحساس مجلات فاخرة."
+                    : "A true 3D light chamber, kinetic type, and an editorial-magazine feel."}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-[#211D19]/70">
+              <div className="flex items-center gap-1 text-[#B8874A]">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                ))}
+              </div>
+              <span className="eh-mono text-[11px] uppercase tracking-[0.2em]">
+                {isRTL ? "مناسب للواجهة البيضاء" : "Built for a light interface"}
+              </span>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
 };
 
 export default EditorialHeroSection;
