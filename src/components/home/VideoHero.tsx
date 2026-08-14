@@ -21,24 +21,11 @@ import {
   BadgeCheck,
 } from "lucide-react";
 
-/**
- * ── Design notes ──────────────────────────────────────────────────────────
- * Palette   #FAF6F0 ivory · #211D19 ink · #B8874A gold · #A24B3B clay
- *           #4A2436 plum   · #F0E4D6 porcelain
- * Type      Fraunces (display, editorial serif) / Manrope (body)
- *           / IBM Plex Mono (clinical labels — precision motif)
- * Signature The "light chamber": a true CSS-3D perspective stage where the
- *           portrait sits on a glass plane flanked by two floating panels
- *           at different Z-depths, all swaying together as one object when
- *           the cursor moves — plus a slow light-sweep across the glass.
- * ───────────────────────────────────────────────────────────────────────── */
-
 const EditorialHeroSection = () => {
   const { t, isRTL } = useLanguage();
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
   const prefersReducedMotion = useReducedMotion();
 
-  // ── global cursor field (drives the 3D chamber + parallax orbs) ──
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 60, damping: 18, mass: 0.4 });
@@ -59,7 +46,6 @@ const EditorialHeroSection = () => {
     my.set(0);
   };
 
-  // ── magnetic CTA ──
   const btnRef = useRef<HTMLDivElement>(null);
   const bx = useMotionValue(0);
   const by = useMotionValue(0);
@@ -98,32 +84,32 @@ const EditorialHeroSection = () => {
     },
   };
 
-  const headlineTop = isRTL ? "سالي" : "Dr. Sally";
+  const headlineTop = isRTL ? "د. سالي العدوي" : "Dr. Sally El Adawy";
   const headlineBottomWords = isRTL
-    ? ["بطابع", "فني", "لا", "يُنسى"]
-    : ["Sculpted", "in", "quiet", "light"];
+    ? ["أخصائية", "الجلدية", "والتجميل", "والليزر"]
+    : ["Cosmetic", "Dermatology", "&", "Laser"];
 
   const specimens = [
     {
-      label: isRTL ? "دقة طبية" : "Precision",
-      note: isRTL ? "تفاصيل محسوبة" : "Measured detail",
+      label: isRTL ? "دبلومة الجلدية" : "Dermatology Diploma",
+      note: isRTL ? "جامعة المنوفية" : "Menoufia University",
       icon: ShieldCheck,
     },
     {
-      label: isRTL ? "جمال طبيعي" : "Beauty",
-      note: isRTL ? "بلا مبالغة" : "Never exaggerated",
+      label: isRTL ? "دبلومة الليزر" : "Laser Diploma",
+      note: isRTL ? "المعهد القومي لعلوم الليزر" : "National Institute of Laser",
       icon: Sparkles,
     },
     {
-      label: isRTL ? "رعاية" : "Care",
-      note: isRTL ? "ثقة حقيقية" : "Real trust",
+      label: isRTL ? "رعاية متخصصة" : "Specialized Care",
+      note: isRTL ? "من أول استشارة للنتيجة" : "From consultation to results",
       icon: HeartPulse,
     },
   ];
 
   const marqueeWords = isRTL
-    ? ["بوتوكس", "فيلر", "تجديد البشرة", "ليزر", "هيدرافيشل", "تقشير كيميائي"]
-    : ["BOTOX", "FILLERS", "SKIN RESURFACING", "LASER THERAPY", "HYDRAFACIAL", "CHEMICAL PEELS"];
+    ? ["جلدية", "ليزر", "تجميل", "تغذية", "شعر", "بوتوكس", "فيلر"]
+    : ["DERMATOLOGY", "LASER", "AESTHETICS", "NUTRITION", "HAIR", "BOTOX", "FILLERS"];
 
   const heroImage = "/images/OES02643.jpg";
 
@@ -148,7 +134,6 @@ const EditorialHeroSection = () => {
         }
       `}</style>
 
-      {/* ── background field ── */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff,#FAF6F0_38%,#F0E4D6_100%)]" />
       <div
         className="absolute inset-0 opacity-[0.35]"
@@ -169,7 +154,6 @@ const EditorialHeroSection = () => {
       />
       <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(rgba(33,29,25,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(33,29,25,0.12)_1px,transparent_1px)] [background-size:44px_44px]" />
 
-      {/* ── vertical museum placard ── */}
       <div
         className={`absolute top-1/2 z-20 hidden -translate-y-1/2 lg:block ${isRTL ? "right-4" : "left-4"}`}
       >
@@ -177,11 +161,10 @@ const EditorialHeroSection = () => {
           className="eh-mono whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.4em] text-[#4A2436]/70"
           style={{ writingMode: "vertical-rl", transform: isRTL ? "rotate(0deg)" : "rotate(180deg)" }}
         >
-          {isRTL ? "قطعة رقم ٠١ — الدكتورة سالي" : "Specimen No. 01 — Dr. Sally"}
+          {isRTL ? "د. سالي العدوي — أخصائية الجلدية والتجميل" : "Dr. Sally El Adawy — Cosmetic Dermatology"}
         </div>
       </div>
 
-      {/* ── marquee ticker ── */}
       <div className="absolute left-0 right-0 top-20 z-20 overflow-hidden border-y border-[#211D19]/10 bg-[#211D19] py-2">
         <div className={`eh-marquee-track flex w-max gap-8 ${isRTL ? "rtl" : ""}`}>
           {[...marqueeWords, ...marqueeWords].map((w, i) => (
@@ -203,12 +186,11 @@ const EditorialHeroSection = () => {
       >
         <motion.div variants={container} initial="hidden" animate="visible" className="w-full">
           <div className="grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
-            {/* ── left: kinetic editorial text ── */}
             <div className="order-2 lg:order-1">
               <div className="max-w-xl">
                 <motion.div variants={fadeUp} className="mb-6 flex items-center gap-3">
                   <span className="eh-mono text-[11px] font-semibold uppercase tracking-[0.35em] text-[#A24B3B]">
-                    {isRTL ? "قسم بصري تحريري" : "Editorial Feature"}
+                    {isRTL ? "عن د. سالي العدوي" : "About Dr. Sally El Adawy"}
                   </span>
                   <span className="h-px flex-1 bg-[#211D19]/15" />
                 </motion.div>
@@ -232,8 +214,8 @@ const EditorialHeroSection = () => {
                 <motion.p variants={fadeUp} className="mt-7 text-base leading-8 text-[#211D19]/70 md:text-lg">
                   {t.hero.description ||
                     (isRTL
-                      ? "بدل الـ layout التقليدي، الهيرو هنا مبني كقطعة فنية معروضة داخل غرفة ضوء زجاجية: عمق حقيقي، انعكاسات ناعمة، ووجه واضح دايمًا في المنتصف."
-                      : "Instead of a standard layout, this hero is staged like an artifact inside a glass light-chamber: real depth, soft reflections, and a face that always stays perfectly clear at the center.")}
+                      ? "أخصائية الجلدية والتجميل والليزر. دبلومة الأمراض الجلدية والتجميل والتناسلية – جامعة المنوفية. دبلومة الليزر – المعهد القومي لعلوم الليزر، جامعة القاهرة. رعاية طبية، أحدث التقنيات، واهتمام يبدأ من أول استشارة وحتى الوصول للنتيجة المناسبة."
+                      : "Specialist in Dermatology, Cosmetics, and Laser. Diploma in Dermatology, Venereology and Andrology – Menoufia University. Laser Diploma – National Institute of Laser Science, Cairo University. Medical care, latest technologies, and attention from the first consultation until reaching the desired result.")}
                 </motion.p>
 
                 <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center gap-4">
@@ -249,7 +231,7 @@ const EditorialHeroSection = () => {
                         whileTap={{ scale: 0.96 }}
                         className="inline-flex items-center gap-3 rounded-full bg-[#211D19] px-7 py-4 text-sm font-bold uppercase tracking-[0.18em] text-[#FAF6F0] shadow-[0_18px_50px_rgba(33,29,25,0.28)]"
                       >
-                        {t.hero.cta || (isRTL ? "احجزي الآن" : "Book Now")}
+                        {t.hero.cta || (isRTL ? "احجز استشارتك" : "Book Consultation")}
                         <ArrowIcon className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
                       </motion.div>
                     </Link>
@@ -257,11 +239,10 @@ const EditorialHeroSection = () => {
 
                   <div className="inline-flex items-center gap-2 rounded-full border border-[#211D19]/10 bg-white/70 px-4 py-3 text-sm font-semibold text-[#211D19]/80 shadow-sm backdrop-blur-md">
                     <Star className="h-4 w-4 fill-[#B8874A] text-[#B8874A]" />
-                    {isRTL ? "تجربة راقية من أول نظرة" : "Elegant from the first glance"}
+                    {isRTL ? "رعاية متخصصة بمعايير طبية عالية" : "Specialized Care with High Medical Standards"}
                   </div>
                 </motion.div>
 
-                {/* specimen strip — not a numbered sequence, just three facets */}
                 <motion.div variants={fadeUp} className="mt-12 flex flex-col divide-y divide-[#211D19]/10 border-y border-[#211D19]/10">
                   {specimens.map((s) => {
                     const Icon = s.icon;
@@ -281,10 +262,8 @@ const EditorialHeroSection = () => {
               </div>
             </div>
 
-            {/* ── right: the light chamber (true 3D stage) ── */}
             <motion.div variants={fadeUp} className="order-1 lg:order-2">
               <div className="relative mx-auto max-w-[640px]" style={{ perspective: 1600 }}>
-                {/* orbit rings */}
                 {!prefersReducedMotion && (
                   <>
                     <motion.div
@@ -300,7 +279,6 @@ const EditorialHeroSection = () => {
                   </>
                 )}
 
-                {/* 3D group: rotates as one object with the cursor */}
                 <motion.div
                   style={{
                     rotateX: prefersReducedMotion ? 0 : stageRotateX,
@@ -309,28 +287,24 @@ const EditorialHeroSection = () => {
                   }}
                   className="relative mx-auto w-[min(100%,480px)]"
                 >
-                  {/* back glass plate — recedes into the scene */}
                   <div
                     style={{ transform: "translateZ(-90px) translateX(6%) rotateY(14deg)", transformStyle: "preserve-3d" }}
                     className="absolute inset-6 hidden rounded-[2.4rem] border border-white/70 bg-white/40 shadow-[0_30px_80px_rgba(74,36,54,0.15)] backdrop-blur-sm md:block"
                   />
-                  {/* mid glass plate */}
                   <div
                     style={{ transform: "translateZ(-40px) translateX(-4%) rotateY(-8deg)", transformStyle: "preserve-3d" }}
                     className="absolute inset-3 hidden rounded-[2.6rem] border border-white/80 bg-[#F0E4D6]/50 shadow-[0_24px_60px_rgba(184,135,74,0.14)] backdrop-blur-sm md:block"
                   />
 
-                  {/* front plane — the portrait itself, forward in Z */}
                   <div
                     style={{ transform: "translateZ(40px)" }}
                     className="relative overflow-hidden rounded-[2.6rem] border border-white/90 bg-white shadow-[0_32px_100px_rgba(33,29,25,0.25)]"
                   >
                     <img
                       src={heroImage}
-                      alt={isRTL ? "الدكتورة سالي" : "Dr. Sally"}
+                      alt={isRTL ? "الدكتورة سالي العدوي" : "Dr. Sally El Adawy"}
                       className="h-[680px] w-full object-cover object-top"
                     />
-                    {/* light sweep across the glass */}
                     {!prefersReducedMotion && (
                       <div
                         className="eh-sweep pointer-events-none absolute -inset-1/2 h-[200%] w-[200%] opacity-40"
@@ -342,18 +316,16 @@ const EditorialHeroSection = () => {
                     )}
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(to_top,rgba(33,29,25,0.55),transparent)]" />
 
-                    {/* nameplate */}
                     <div className="absolute bottom-6 left-6 z-20 rounded-full border border-white/30 bg-white/15 px-5 py-3 backdrop-blur-md">
                       <div className="eh-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-[#F0E4D6]">
-                        {isRTL ? "الدكتورة سالي" : "Dr. Sally"}
+                        {isRTL ? "د. سالي العدوي" : "Dr. Sally El Adawy"}
                       </div>
                       <div className="mt-1 text-[11px] font-medium tracking-[0.1em] text-white/80">
-                        {isRTL ? "جلدية تجميلية" : "Cosmetic Dermatology"}
+                        {isRTL ? "أخصائية الجلدية والتجميل والليزر" : "Dermatology, Cosmetics & Laser Specialist"}
                       </div>
                     </div>
                   </div>
 
-                  {/* floating facet plates — forward of the portrait in Z */}
                   <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -365,7 +337,7 @@ const EditorialHeroSection = () => {
                       <ShieldCheck className="h-4 w-4" />
                     </div>
                     <div className="eh-display mt-2 text-sm font-semibold text-[#211D19]">
-                      {isRTL ? "دقة طبية" : "Precision"}
+                      {isRTL ? "دقة طبية" : "Medical Precision"}
                     </div>
                   </motion.div>
 
@@ -380,7 +352,7 @@ const EditorialHeroSection = () => {
                       <BadgeCheck className="h-4 w-4" />
                     </div>
                     <div className="eh-display mt-2 text-sm font-semibold text-[#211D19]">
-                      {isRTL ? "تجربة موثوقة" : "Trusted"}
+                      {isRTL ? "تجربة موثوقة" : "Trusted Experience"}
                     </div>
                   </motion.div>
                 </motion.div>
@@ -388,7 +360,6 @@ const EditorialHeroSection = () => {
             </motion.div>
           </div>
 
-          {/* ── bottom ribbon ── */}
           <motion.div
             variants={fadeUp}
             className="mt-14 flex flex-col gap-4 rounded-[2rem] border border-[#211D19]/10 bg-white/70 px-5 py-4 shadow-[0_14px_40px_rgba(33,29,25,0.08)] backdrop-blur-md md:flex-row md:items-center md:justify-between"
@@ -399,12 +370,12 @@ const EditorialHeroSection = () => {
               </div>
               <div>
                 <div className="eh-display text-sm font-semibold text-[#211D19]">
-                  {isRTL ? "Hero مختلف فعلًا" : "A hero unlike the rest"}
+                  {isRTL ? "رعاية طبية متخصصة" : "Specialized Medical Care"}
                 </div>
                 <div className="text-xs text-[#211D19]/60">
                   {isRTL
-                    ? "غرفة ضوء ثلاثية الأبعاد، تحريك حركي، وإحساس مجلات فاخرة."
-                    : "A true 3D light chamber, kinetic type, and an editorial-magazine feel."}
+                    ? "رعاية طبية، أحدث التقنيات، واهتمام يبدأ من أول استشارة وحتى الوصول للنتيجة المناسبة."
+                    : "Medical care, latest technologies, and attention from the first consultation until reaching the desired result."}
                 </div>
               </div>
             </div>
@@ -415,7 +386,7 @@ const EditorialHeroSection = () => {
                 ))}
               </div>
               <span className="eh-mono text-[11px] uppercase tracking-[0.2em]">
-                {isRTL ? "مناسب للواجهة البيضاء" : "Built for a light interface"}
+                {isRTL ? "معايير طبية عالية" : "High Medical Standards"}
               </span>
             </div>
           </motion.div>

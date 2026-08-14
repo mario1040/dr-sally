@@ -32,8 +32,8 @@ const Offers = () => {
       title: language === 'ar' ? 'خصم الليزر' : 'Laser Discount',
       value: '20%',
       description: language === 'ar'
-        ? 'خصم فوري عند حجز باقة 6 جلسات للجسم كامل'
-        : 'Instant discount on booking a 6-session full body package',
+        ? 'خصم فوري عند حجز باقة الليزر للجسم بالكامل - 6 جلسات'
+        : 'Instant discount when booking a full body laser package - 6 sessions',
       code: 'LASER20',
       bgColor: 'bg-rose-50',
       textColor: 'text-rose-600',
@@ -41,11 +41,11 @@ const Offers = () => {
     },
     {
       icon: Gift,
-      title: language === 'ar' ? 'هدية مجانية' : 'Free Gift',
+      title: language === 'ar' ? 'جلسة هيدرافيشل هدية' : 'Free HydraFacial Session',
       value: 'FREE',
       description: language === 'ar'
-        ? 'جلسة هيدرافيشل مجانية مع خدمات بقيمة 3000 جنيه'
-        : 'Free HydraFacial session with services worth 3000 EGP',
+        ? 'احصل على جلسة Hydrafacial مجانًا عند الحصول على خدمات بقيمة 3000 جنيه'
+        : 'Get a free HydraFacial session when you purchase services worth 3000 EGP',
       code: 'HYDRA-GIFT',
       bgColor: 'bg-blue-50',
       textColor: 'text-blue-600',
@@ -53,22 +53,22 @@ const Offers = () => {
     },
     {
       icon: Star,
-      title: language === 'ar' ? 'باقة العروس' : 'Bridal Package',
+      title: language === 'ar' ? 'باكدچ العروسة' : 'Bridal Package',
       value: 'VIP',
       description: language === 'ar'
-        ? 'بكج الملكة: عناية شاملة بالبشرة والجسم قبل الزفاف'
-        : 'Queen Package: Complete skin and body care before wedding',
-      code: 'BRIDE2024',
+        ? 'تجهيز متكامل للبشرة والجسم قبل الزفاف'
+        : 'Complete skin and body preparation before the wedding',
+      code: 'BRIDE2026',
       bgColor: 'bg-amber-50',
       textColor: 'text-amber-600',
       borderColor: 'border-amber-100'
     },
     {
       icon: Clock,
-      title: language === 'ar' ? 'كشف مجاني' : 'Free Checkup',
+      title: language === 'ar' ? 'استشارة مجانية' : 'Free Consultation',
       value: '0 EGP',
       description: language === 'ar'
-        ? 'استشارة أولية مجانية للأعضاء الجدد لفترة محدودة'
+        ? 'استشارة أولية مجانًا للأعضاء الجدد لفترة محدودة'
         : 'Free initial consultation for new members for a limited time',
       code: 'CONSULT',
       bgColor: 'bg-emerald-50',
@@ -79,7 +79,7 @@ const Offers = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/50 pt-32 pb-20">
-      
+
       {/* ================= HEADER ================= */}
       <div className="container px-4 mx-auto mb-16 text-center">
         <motion.div
@@ -95,12 +95,12 @@ const Offers = () => {
         </motion.div>
 
         <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 font-cairo">
-           {language === 'ar' ? 'دليلك للتوفير والجمال' : 'Your Guide to Beauty & Savings'}
+           {language === 'ar' ? 'عروض تستاهلها' : 'Offers You Deserve'}
         </h1>
         <p className="text-slate-500 text-lg max-w-2xl mx-auto font-light">
            {language === 'ar' 
-             ? 'استمتعي بأفضل الخدمات بأفضل الأسعار. صممنا هذه الباقات خصيصاً لراحتك.'
-             : 'Enjoy the best services at the best prices. These packages are designed for your comfort.'}
+             ? 'باقات وعروض مختارة على مجموعة من الخدمات، لفترة محدودة.'
+             : 'Selected packages and offers on a range of services, for a limited time.'}
         </p>
       </div>
 
@@ -116,10 +116,10 @@ const Offers = () => {
       {/* ================= CALL TO ACTION ================= */}
       <div className="container px-4 mx-auto mt-20 text-center">
          <p className="text-slate-400 text-sm mb-6">
-            {language === 'ar' ? '* تطبق الشروط والأحكام على جميع العروض' : '* Terms and conditions apply'}
+            {language === 'ar' ? '* تُطبق الشروط والأحكام على جميع العروض' : '* Terms and conditions apply to all offers'}
          </p>
          <Button size="lg" className="rounded-full px-10 py-6 text-lg bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-200 transition-all hover:-translate-y-1">
-            {language === 'ar' ? 'احجزي موعدك الآن' : 'Book Appointment Now'}
+            {language === 'ar' ? 'احجز موعدك الآن' : 'Book Appointment Now'}
          </Button>
       </div>
 
@@ -183,7 +183,7 @@ const CouponCard = ({ offer, isRTL, index }: CouponCardProps) => {
                    {offer.code}
                 </span>
              </div>
-             
+
              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-slate-400 group-hover/code:text-slate-900 transition-colors">
                 <AnimatePresence mode='wait'>
                    {copied ? (

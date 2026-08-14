@@ -101,10 +101,10 @@ const DermatologyLaser = () => {
             </span>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#3d2f2a] mb-6 font-cairo leading-tight">
-              {language === 'ar' ? 'الجلدية و' : 'Dermatology &'}{' '}
+              {language === 'ar' ? 'بشرة صح..' : 'Dermatology &'} {' '}
               <span className="relative inline-block">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a97c3f] via-[#c9a15a] to-[#a97c3f] bg-[size:200%] animate-gradient-x">
-                  {language === 'ar' ? 'الليزر' : 'Laser'}
+                  {language === 'ar' ? 'تبدأ بفهمها' : 'Laser'}
                 </span>
                 <svg viewBox="0 0 200 20" className="absolute -bottom-2 left-0 w-full h-5 overflow-visible" preserveAspectRatio="none">
                   <motion.path
@@ -123,7 +123,7 @@ const DermatologyLaser = () => {
 
             <p className="text-lg text-[#7a675d] leading-relaxed font-medium mb-10">
               {language === 'ar'
-                ? 'علاجات متقدمة للبشرة تقدمها أيدي أطباء متخصصين باستخدام أحدث التقنيات.'
+                ? 'حلول متخصصة لمشاكل البشرة والليزر والتجميل، بخطة تناسب طبيعة كل حالة.'
                 : 'Advanced skin treatments delivered by specialist doctors using the latest technologies.'}
             </p>
 

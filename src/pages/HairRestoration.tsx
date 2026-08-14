@@ -64,11 +64,11 @@ const HairRestoration = () => {
               {language === 'ar' ? 'خدماتنا' : 'Our Services'}
             </span>
             <h1 className="text-4xl md:text-5xl font-bold text-secondary mt-2 mb-6">
-              {language === 'ar' ? 'استعادة الشعر' : 'Hair Restoration'}
+              {language === 'ar' ? 'شعر أقوى .. بثقة أكبر' : 'Hair Restoration'}
             </h1>
             <p className="text-lg text-muted-foreground">
               {language === 'ar'
-                ? 'حلول متكاملة لاستعادة الشعر باستخدام أحدث التقنيات والأساليب العلاجية.'
+                ? 'حلول متخصصة لزراعة الشعر وعلاج مشكلاته، بتقييم وخطة مناسبة لكل حالة.'
                 : 'Complete hair restoration solutions using the latest technologies and treatment methods.'
               }
             </p>

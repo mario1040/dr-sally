@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-// قمت باستيراد أيقونات إضافية لتناسب تنوع الأجهزة
 import { Sparkles, Zap, Activity, ScanFace, Waves, Snowflake, Droplets, Syringe, Eraser, Microscope } from 'lucide-react';
 
 interface Technology {
@@ -17,7 +16,6 @@ const TechnologiesSection = () => {
   const { isRTL } = useLanguage();
 
   const technologies: Technology[] = [
-    // --- أجهزة الليزر ---
     {
       id: 1,
       name: 'Deka Again 2024',
@@ -34,8 +32,6 @@ const TechnologiesSection = () => {
       image: '/images/dev2.png',
       icon: Sparkles,
     },
-
-    // --- أجهزة الجلدية والتجميل ---
     {
       id: 3,
       name: 'Fractional Laser',
@@ -50,7 +46,7 @@ const TechnologiesSection = () => {
       description: 'Advanced Skin Analysis',
       arabicDescription: 'كشف مشاكل البشرة العميقة والتصبغات المخفية',
       image: '/images/dev4.png',
-      icon: Microscope, // أيقونة ميكروسكوب للفحص
+      icon: Microscope,
     },
     {
       id: 5,
@@ -58,7 +54,7 @@ const TechnologiesSection = () => {
       description: 'Hydro-Facial & Pore Cleansing',
       arabicDescription: 'تنظيف عميق، شد البشرة، وعلاج المسام الواسعة',
       image: '/images/dev5.png',
-      icon: Droplets, // أيقونة قطرات للماء/التنظيف
+      icon: Droplets,
     },
     {
       id: 6,
@@ -66,7 +62,7 @@ const TechnologiesSection = () => {
       description: 'Tattoo & Pigmentation Removal',
       arabicDescription: 'إزالة التاتو، النمش، الوحمات، والتقشير الكربوني',
       image: '/images/dev6.png',
-      icon: Eraser, // أيقونة ممحاة للإزالة
+      icon: Eraser,
     },
     {
       id: 7,
@@ -74,7 +70,7 @@ const TechnologiesSection = () => {
       description: 'Microneedling for Scars',
       arabicDescription: 'علاج آثار الحبوب وتفتيح التصبغات',
       image: '/images/dev7.png',
-      icon: Syringe, // أيقونة قريبة للإبر
+      icon: Syringe,
     },
     {
       id: 8,
@@ -92,8 +88,6 @@ const TechnologiesSection = () => {
       image: '/images/dev9.png',
       icon: Droplets,
     },
-
-    // --- أجهزة التخسيس ونحت القوام ---
     {
       id: 10,
       name: 'Deka Smart Lipo',
@@ -124,7 +118,7 @@ const TechnologiesSection = () => {
       description: 'Fat Freezing',
       arabicDescription: 'تجميد الدهون (يعمل على 4 مناطق في وقت واحد)',
       image: '/images/dev13.png',
-      icon: Snowflake, // أيقونة ندفة الثلج للتجميد
+      icon: Snowflake,
     },
     {
       id: 14,
@@ -136,19 +130,14 @@ const TechnologiesSection = () => {
     },
   ];
 
-  // تكرار القائمة لضمان استمرار الحركة في الشريط (Marquee)
-  // بما أن القائمة أصبحت طويلة (14 جهاز)، التكرار مرتين كافٍ جداً
   const duplicatedTech = [...technologies, ...technologies];
 
   return (
     <section className="relative py-24 bg-[#05151F] overflow-hidden">
-      
-      {/* Background Effects */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 brightness-100 mix-blend-overlay"></div>
       <div className="absolute top-0 left-1/3 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/3 w-96 h-96 bg-yellow-500/5 rounded-full blur-[100px] pointer-events-none" />
 
-      {/* Header */}
       <div className="container mx-auto px-4 mb-16 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -174,7 +163,6 @@ const TechnologiesSection = () => {
         </motion.div>
       </div>
 
-      {/* Infinite Marquee */}
       <div className="relative w-full" dir="ltr">
         <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#05151F] to-transparent z-20 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#05151F] to-transparent z-20 pointer-events-none" />
@@ -185,14 +173,12 @@ const TechnologiesSection = () => {
         >
           <motion.div
             className="flex gap-6 px-4"
-            animate={{
-              x: ['0%', '-50%'],
-            }}
+            animate={{ x: ['0%', '-50%'] }}
             transition={{
               x: {
                 repeat: Infinity,
                 repeatType: "loop",
-                duration: 80, // قمت بزيادة الوقت لأن عدد الكروت زاد، لكي لا تكون الحركة سريعة جداً
+                duration: 80,
                 ease: "linear",
               },
             }}
@@ -219,10 +205,7 @@ const TechCard = ({ tech, isRTL }: { tech: Technology, isRTL: boolean }) => {
       dir={isRTL ? 'rtl' : 'ltr'}
     >
       <div className="absolute inset-0 bg-white/[0.03] backdrop-blur-md rounded-3xl border border-white/10 transition-all duration-500 group-hover:bg-white/[0.08] group-hover:border-yellow-500/50 group-hover:shadow-[0_0_30px_rgba(234,179,8,0.1)] group-hover:-translate-y-2 overflow-hidden">
-        
         <div className="h-full flex flex-col p-6 relative z-10">
-          
-          {/* Header */}
           <div className="flex justify-between items-start mb-2">
             <div className="p-2.5 rounded-full bg-white/5 border border-white/10 group-hover:bg-yellow-500 text-slate-300 group-hover:text-black transition-colors duration-300">
               <Icon className="w-5 h-5" />
@@ -232,7 +215,6 @@ const TechCard = ({ tech, isRTL }: { tech: Technology, isRTL: boolean }) => {
             </span>
           </div>
 
-          {/* Image Area */}
           <div className="relative h-[160px] w-full flex items-center justify-center my-4 p-1">
             <div className="relative w-full h-full rounded-2xl overflow-hidden flex items-center justify-center transition-all duration-500 group-hover:shadow-[0_0_15px_rgba(234,179,8,0.15)]">
                 <div className="absolute inset-0 bg-gradient-to-tr from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md" />
@@ -250,7 +232,6 @@ const TechCard = ({ tech, isRTL }: { tech: Technology, isRTL: boolean }) => {
             </div>
           </div>
 
-          {/* Footer Text */}
           <div className="mt-auto border-t border-white/5 pt-4">
             <h3 className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors font-cairo truncate">
               {tech.name}
@@ -259,7 +240,6 @@ const TechCard = ({ tech, isRTL }: { tech: Technology, isRTL: boolean }) => {
               {isRTL ? tech.arabicDescription : tech.description}
             </p>
           </div>
-
         </div>
       </div>
     </div>

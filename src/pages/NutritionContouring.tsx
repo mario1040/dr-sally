@@ -64,11 +64,11 @@ const NutritionContouring = () => {
               {language === 'ar' ? 'خدماتنا' : 'Our Services'}
             </span>
             <h1 className="text-4xl md:text-5xl font-bold text-secondary mt-2 mb-6">
-              {language === 'ar' ? 'التغذية ونحت الجسم' : 'Nutrition & Body Contouring'}
+              {language === 'ar' ? 'التغيير يبدأ من جوّه' : 'Nutrition & Body Contouring'}
             </h1>
             <p className="text-lg text-muted-foreground">
               {language === 'ar'
-                ? 'رحلة شاملة للعافية من خطط التغذية المخصصة إلى تقنيات نحت الجسم المتقدمة.'
+                ? 'خطط تغذية وتقنيات متقدمة لنحت الجسم، حسب احتياجات وأهداف كل حالة.'
                 : 'A comprehensive wellness journey from custom nutrition plans to advanced body sculpting.'
               }
             </p>

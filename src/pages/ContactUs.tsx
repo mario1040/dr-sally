@@ -63,7 +63,7 @@ const ContactUs = () => {
             className="text-center max-w-3xl mx-auto"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-[#3d2f2a] mb-6 font-cairo relative inline-block">
-              {t.contact.title}
+              {language === 'ar' ? 'عندك سؤال؟' : 'Have a question?'}
               <svg viewBox="0 0 220 20" className="absolute -bottom-3 left-0 w-full h-5 overflow-visible" preserveAspectRatio="none">
                 <motion.path
                   d="M3,12 C45,3 90,17 115,9 C145,1 180,15 217,7"
@@ -77,7 +77,14 @@ const ContactUs = () => {
                 />
               </svg>
             </h1>
-            <p className="text-lg text-[#7a675d] font-medium mt-4">{t.contact.subtitle}</p>
+            <p className="text-lg text-[#7a675d] font-medium mt-4">
+              {language === 'ar' ? 'خلينا نبدأ من هنا' : "Let's start here"}
+            </p>
+            <p className="text-base text-[#8a7469] mt-3 max-w-xl mx-auto leading-relaxed">
+              {language === 'ar' 
+                ? 'لو عندك استفسار عن خدمة، علاج، أو حابب تعرف أنسب خطوة لحالتك، ابعتلنا وهنرجعلك في أقرب وقت.' 
+                : 'If you have an inquiry about a service, treatment, or would like to know the best next step for your condition, send us a message and we will get back to you as soon as possible.'}
+            </p>
           </motion.div>
         </div>
       </section>
@@ -111,10 +118,12 @@ const ContactUs = () => {
                 </div>
 
                 <h2 className="text-2xl font-bold text-[#3d2f2a] mb-1 font-cairo text-center">
-                  {language === 'ar' ? 'اكتبي لنا رسالتكِ' : 'Write Us a Letter'}
+                  {language === 'ar' ? 'قولنا إزاي نقدر نساعدك' : 'Tell us how we can help you'}
                 </h2>
                 <p className="text-xs text-[#8a7469] text-center mb-8 tracking-wide">
-                  {language === 'ar' ? 'سنرد عليكِ خلال 24 ساعة' : "We'll reply within 24 hours"}
+                  {language === 'ar' 
+                    ? 'سيب رسالتك واستفسارك، وفريقنا هيتواصل معاك خلال 24 ساعة' 
+                    : 'Leave your message and inquiry, and our team will contact you within 24 hours'}
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-7">
@@ -175,7 +184,7 @@ const ContactUs = () => {
                             className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full flex items-center gap-2 px-4 py-2 rounded-full bg-[#3d2f2a] text-[#f6e9df] text-xs font-bold whitespace-nowrap shadow-lg"
                           >
                             <Sparkles className="w-3.5 h-3.5 text-[#c9a15a]" />
-                            {language === 'ar' ? 'تم إرسال رسالتكِ بنجاح' : 'Your letter has been sent'}
+                            {language === 'ar' ? 'تم إرسال استفسارك بنجاح' : 'Your inquiry has been sent successfully'}
                           </motion.div>
                           {Array.from({ length: 6 }).map((_, i) => (
                             <motion.span

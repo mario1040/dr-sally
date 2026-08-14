@@ -25,8 +25,8 @@ const testimonials: Testimonial[] = [
     id: "1",
     nameEn: "Dr. Sally El Adawy",
     nameAr: "د. سالي العدوي",
-    roleEn: "Dentist",
-    roleAr: "طبيب أسنان",
+    roleEn: "Dermatology & Aesthetics",
+    roleAr: "جلدية وتجميل",
     quoteEn: "Tooth decay in children is one of the most common problems that parents encounter. In this video, we will talk about this topic.",
     quoteAr: "تسوّس الأسنان عند الأطفال من أكتر المشاكل اللي بتقابل الأهالي وفي الفيديو ده، هنتكلم عن الموضوع ده.",
     thumbnail: "images/OES02481.jpg",
@@ -60,8 +60,8 @@ const testimonials: Testimonial[] = [
     nameAr: "د. سالي العدوي",
     roleEn: "Dermatology & Aesthetics",
     roleAr: "جلدية وتجميل",
-    quoteEn: "How can you get rid of local fat without surgery? 💉 We will talk about mesolipolysis, the famous fat-breaking technique.",
-    quoteAr: "إزاي تتخلص من الدهون الموضعية من غير جراحة؟ 💉 هنتكلم عن تقنية الميزو ليبوليسيس، لتفتيت الدهون بالحقن.",
+    quoteEn: "How can you get rid of local fat without surgery? We will talk about mesolipolysis, the famous fat-breaking technique.",
+    quoteAr: "إزاي تتخلص من الدهون الموضعية من غير جراحة؟ هنتكلم عن تقنية الميزو ليبوليسيس، لتفتيت الدهون بالحقن.",
     thumbnail: "images/OES02707.jpg",
     videoId: "uNoNlfUV1PA",
   },
@@ -73,11 +73,9 @@ const testimonials: Testimonial[] = [
 
   return (
     <section className="relative py-24 bg-background overflow-hidden">
-      {/* Background Ambient Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Title with Animated Underline */}
         <div className="text-center mb-20 flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -97,16 +95,14 @@ const testimonials: Testimonial[] = [
             />
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-light">
               {language === "en"
-                ? "Insights, expertise, and real stories from our medical professionals."
-                : "رؤى، خبرات، وقصص حقيقية يشاركها نخبة من أطبائنا."}
+                ? "Insights, expertise, and real stories from Dr. Sally El Adawy."
+                : "اسمع المعلومة من مصدرها. فيديوهات بتشرح أشهر مشاكل البشرة، وتجاوب على الأسئلة اللي ناس كتير بتسألها."}
             </p>
           </motion.div>
         </div>
 
-        {/* Staggered Cinematic Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 items-start">
           {testimonials.map((testimonial, index) => {
-            // Create a staggered layout (even items pushed down slightly)
             const isEven = index % 2 === 1;
 
             return (
@@ -121,26 +117,21 @@ const testimonials: Testimonial[] = [
                 }`}
                 onClick={() => setSelectedVideo(testimonial)}
               >
-                {/* Image Background */}
                 <img
                   src={testimonial.thumbnail}
                   alt={language === "en" ? testimonial.nameEn : testimonial.nameAr}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
 
-                {/* Dark Gradient Overlay for Text Readability */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
 
-                {/* Floating Play Button */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
                   <motion.div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 group-hover:bg-primary group-hover:border-primary transition-all duration-300">
                     <Play className="w-6 h-6 text-white ml-1.5" fill="currentColor" />
                   </motion.div>
-                  {/* Ripple Effect on Hover */}
                   <div className="absolute inset-0 rounded-full border-2 border-primary scale-0 opacity-0 group-hover:animate-ping" />
                 </div>
 
-                {/* Content Reveal */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col justify-end h-full z-10 transform translate-y-[85px] group-hover:translate-y-0 transition-transform duration-500 ease-out">
                   <div className="mb-4">
                     <h3 className="text-white font-serif font-bold text-xl mb-1 drop-shadow-md">
@@ -151,7 +142,6 @@ const testimonials: Testimonial[] = [
                     </span>
                   </div>
 
-                  {/* Hidden Quote that slides up */}
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 relative">
                     <Quote className="absolute -top-2 -left-2 w-8 h-8 text-white/10 rotate-180" />
                     <p className="text-white/80 text-sm leading-relaxed line-clamp-3 relative z-10 pl-2">
@@ -165,7 +155,6 @@ const testimonials: Testimonial[] = [
         </div>
       </div>
 
-      {/* Cinematic Modal */}
       <AnimatePresence>
         {selectedVideo && (
           <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
@@ -173,7 +162,7 @@ const testimonials: Testimonial[] = [
               <DialogTitle className="sr-only">
                 {language === "en" ? selectedVideo.nameEn : selectedVideo.nameAr}
               </DialogTitle>
-              
+
               <div className="relative w-full aspect-video bg-black">
                 <iframe
                   src={`https://www.youtube.com/embed/${selectedVideo.videoId}?autoplay=1&rel=0&modestbranding=1`}
@@ -184,7 +173,6 @@ const testimonials: Testimonial[] = [
                 />
               </div>
 
-              {/* Enhanced Close Button */}
               <button
                 onClick={() => setSelectedVideo(null)}
                 className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center hover:bg-white hover:text-black text-white transition-all duration-300 z-50 border border-white/10"

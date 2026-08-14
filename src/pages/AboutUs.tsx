@@ -1,12 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { motion, Variants, useMotionValue, useTransform, useInView } from 'framer-motion';
+import { motion, Variants, useMotionValue, useInView } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-import { Target, Eye, Sparkles, Diamond, Heart } from 'lucide-react';
+import { Target, Eye, Sparkles, Diamond, Heart, Stethoscope } from 'lucide-react';
 
 const AboutUs = () => {
   const { t, isRTL } = useLanguage();
 
-  // إعدادات الحركة الفاخرة لتتماشى مع باقي الموقع
   const fadeUp: Variants = {
     hidden: { opacity: 0, y: 40 },
     visible: {
@@ -22,12 +21,11 @@ const AboutUs = () => {
 
   return (
     <div className="bg-gradient-to-b from-[#fdfbf8] via-[#faf3ec] to-[#f6e9df] min-h-screen overflow-hidden">
-      {/* ================= HERO SECTION (الفلسفة) ================= */}
+      {/* ================= HERO SECTION ================= */}
       <section className="relative pt-40 pb-20 lg:pt-48 lg:pb-24 overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px]" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90vw] h-[90vw] max-w-4xl bg-[radial-gradient(circle,rgba(255,255,255,0.9)_0%,rgba(233,185,196,0.22)_45%,transparent_72%)] pointer-events-none" />
 
-        {/* بتلات عائمة خفيفة لإحساس حي بالحركة */}
         <div className="absolute inset-0 pointer-events-none">
           {Array.from({ length: 8 }).map((_, i) => (
             <PetalParticle key={i} />
@@ -44,7 +42,7 @@ const AboutUs = () => {
             <motion.div variants={fadeUp} className="mb-6">
               <span className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#c9a15a]/35 bg-white/70 backdrop-blur-sm text-[#8a5f2c] text-sm font-bold tracking-widest uppercase shadow-sm">
                 <Sparkles className="w-4 h-4 text-[#c9a15a]" />
-                {isRTL ? 'فلسفة الجمال' : 'Our Philosophy'}
+                {isRTL ? 'فلسفة التجميل' : 'Aesthetics Philosophy'}
               </span>
             </motion.div>
 
@@ -52,12 +50,11 @@ const AboutUs = () => {
               variants={fadeUp}
               className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#3d2f2a] mb-8 font-cairo leading-tight"
             >
-              {isRTL ? 'حيث يلتقي الطب بـ' : 'Where Medicine Meets'} <br />
+              {isRTL ? 'كل نتيجة ناجحة' : 'Every Successful Result'} <br />
               <span className="relative inline-block mt-3">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a97c3f] via-[#c9a15a] to-[#a97c3f] bg-[size:200%] animate-gradient-x">
-                  {isRTL ? 'فن التجميل' : 'The Art of Aesthetics'}
+                  {isRTL ? 'ليها بداية صح' : 'Starts with the Right Beginning'}
                 </span>
-                {/* خط الفرشاة الذهبي - يرسم نفسه */}
                 <svg viewBox="0 0 300 24" className="absolute -bottom-3 left-0 w-full h-6 overflow-visible" preserveAspectRatio="none">
                   <motion.path
                     d="M4,14 C60,4 110,20 150,10 C190,2 240,18 296,8"
@@ -73,37 +70,41 @@ const AboutUs = () => {
               </span>
             </motion.h1>
 
-            <motion.p variants={fadeUp} className="text-lg md:text-xl text-[#7a675d] leading-relaxed font-medium max-w-2xl mb-14">
-              {t.footer?.aboutText ||
-                (isRTL
-                  ? 'في عياداتنا، نؤمن بأن الجمال الحقيقي ينبع من الثقة بالنفس. بقيادة الدكتورة فريحان زكريا، نكرس جهودنا وخبراتنا لتقديم رعاية تجميلية استثنائية تبرز أجمل ما فيكِ بطريقة طبيعية وآمنة.'
-                  : 'Under the leadership of Dr. Freehan Zakria, we are dedicated to providing exceptional aesthetic care that highlights your natural beauty in a safe and artistic way.')}
+            <motion.p variants={fadeUp} className="text-lg md:text-xl text-[#7a675d] leading-relaxed font-medium max-w-2xl mb-6">
+              {isRTL
+                ? 'بالنسبالي التجميل مش هدف في حد ذاته، لكنه وسيلة تخلي كل شخص يحس بثقة أكبر في نفسه، من غير ما يفقد ملامحه الطبيعية.'
+                : 'For me, aesthetics is not a goal in itself, but a means to make every person feel more confident in themselves, without losing their natural features.'}
             </motion.p>
 
-            {/* شريط ثقة بأرقام متحركة */}
+            <motion.p variants={fadeUp} className="text-lg md:text-xl text-[#7a675d] leading-relaxed font-medium max-w-2xl mb-14">
+              {isRTL
+                ? 'علشان كده، كل حالة بتبدأ بتقييم دقيق، وفهم للاحتياج الحقيقي، وبعدها بنحدد الخطة الأنسب باستخدام أحدث التقنيات الطبية.'
+                : "That's why every case starts with a precise evaluation, understanding the real need, and then determining the most suitable plan using the latest medical technologies."}
+            </motion.p>
+
             <motion.div variants={fadeUp} className="flex items-center gap-6 sm:gap-12">
-              <Counter target={10} suffix="+" label={isRTL ? 'سنوات خبرة' : 'Years Experience'} />
+              <Counter target={10} suffix="+" label={isRTL ? 'سنوات من الخبرة' : 'Years of Experience'} />
               <span className="w-px h-12 bg-[#c9a15a]/25" />
-              <Counter target={5000} suffix="+" label={isRTL ? 'عميلة سعيدة' : 'Happy Clients'} />
+              <Counter target={5000} suffix="+" label={isRTL ? 'حالة في مجالات الجلدية والتجميل والليزر' : 'Cases in Dermatology, Aesthetics & Laser'} />
               <span className="w-px h-12 bg-[#c9a15a]/25" />
-              <Counter target={98} suffix="%" label={isRTL ? 'رضا العميلات' : 'Satisfaction Rate'} />
+              <Counter target={98} suffix="%" label={isRTL ? 'رضا العملاء عن تجربتهم' : 'Client Satisfaction Rate'} />
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* ================= الشريط الزجزاجي المتحرك (العنصر التوقيعي) ================= */}
+      {/* ================= ZIGZAG RIBBON 1 ================= */}
       <ZigzagRibbon
         isRTL={isRTL}
         rotate={-1.5}
         items={
           isRTL
-            ? ['أكثر من 10 سنوات خبرة', 'تقنيات عالمية معتمدة', 'رعاية طبية استثنائية', 'نتائج طبيعية وآمنة']
-            : ['10+ Years of Excellence', 'Certified Global Technology', 'Exceptional Medical Care', 'Safe & Natural Results']
+            ? ['خبرة عملية', 'تشخيص دقيق', 'نتائج طبيعية', 'تقنيات حديثة', 'رعاية مستمرة']
+            : ['Practical Experience', 'Accurate Diagnosis', 'Natural Results', 'Modern Techniques', 'Continuous Care']
         }
       />
 
-      {/* ================= VISION & MISSION (بطاقات مؤطرة بميلان ثلاثي الأبعاد) ================= */}
+      {/* ================= VISION & MISSION ================= */}
       <section className="relative py-24">
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <motion.div
@@ -116,12 +117,11 @@ const AboutUs = () => {
             <motion.div variants={fadeUp}>
               <TiltCard
                 icon={Eye}
-                title={t.about?.vision || (isRTL ? 'رؤيتنا' : 'Our Vision')}
+                title={isRTL ? 'رؤيتي' : 'My Vision'}
                 text={
-                  t.about?.visionText ||
-                  (isRTL
-                    ? 'أن نكون الوجهة الأولى والموثوقة في عالم التجميل والعناية بالبشرة، وأن نضع معايير جديدة للفخامة والجودة الطبية، لنلهم كل امرأة لاكتشاف جمالها الفريد.'
-                    : 'To be the most trusted destination in the world of aesthetics, setting new standards for luxury and medical quality.')
+                  isRTL
+                    ? 'أقدم رعاية طبية مبنية على العلم والخبرة، بحيث تكون كل نتيجة مناسبة للحالة وتحافظ على المظهر الطبيعي.'
+                    : 'I provide medical care based on science and experience, so that every result is appropriate for the case and preserves the natural appearance.'
                 }
               />
             </motion.div>
@@ -129,12 +129,11 @@ const AboutUs = () => {
             <motion.div variants={fadeUp}>
               <TiltCard
                 icon={Target}
-                title={t.about?.mission || (isRTL ? 'رسالتنا' : 'Our Mission')}
+                title={isRTL ? 'رسالتي' : 'My Mission'}
                 text={
-                  t.about?.missionText ||
-                  (isRTL
-                    ? 'تقديم أعلى مستويات الرعاية الطبية التجميلية باستخدام أحدث التقنيات العالمية، مع الالتزام التام بالشفافية، الأمان، وتصميم خطة علاجية مخصصة تلبي احتياجات كل حالة بدقة.'
-                    : 'To provide the highest levels of aesthetic medical care using the latest global technologies, with full commitment to transparency and safety.')
+                  isRTL
+                    ? 'أساعد كل حالة لتصل لأفضل نتيجة ممكنة من خلال تشخيص دقيق، وخطة علاج مناسبة، ومتابعة مستمرة في كل خطوة.'
+                    : 'I help every case achieve the best possible result through accurate diagnosis, an appropriate treatment plan, and continuous follow-up at every step.'
                 }
               />
             </motion.div>
@@ -142,19 +141,19 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* ================= شريط زجزاجي ثانٍ باتجاه معاكس لإيقاع بصري ================= */}
+      {/* ================= ZIGZAG RIBBON 2 ================= */}
       <ZigzagRibbon
         isRTL={isRTL}
         rotate={1.5}
         reverse
         items={
           isRTL
-            ? ['خصوصية تامة', 'استشارة مجانية', 'فريق طبي متخصص', 'إطلالة تليق بكِ']
-            : ['Complete Privacy', 'Free Consultation', 'Specialized Medical Team', 'A Look That Suits You']
+            ? ['تشخيص دقيق', 'خصوصية تامة', 'اهتمام بكل حالة', 'متابعة مستمرة']
+            : ['Accurate Diagnosis', 'Complete Privacy', 'Attention to Every Case', 'Continuous Follow-up']
         }
       />
 
-      {/* ================= CORE VALUES (ثلاثية القيم) ================= */}
+      {/* ================= CORE VALUES / PRINCIPLES ================= */}
       <section className="py-28 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl bg-[#c9a15a]/10 rounded-full blur-[150px] pointer-events-none" />
 
@@ -167,45 +166,44 @@ const AboutUs = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-6 font-cairo text-[#3d2f2a]">
-              {isRTL ? 'قيمنا' : 'Core'}{' '}
+              {isRTL ? 'مبادئنا' : 'Our'}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a97c3f] to-[#c9a15a]">
-                {isRTL ? 'الأساسية' : 'Values'}
+                {isRTL ? '' : 'Principles'}
               </span>
             </h2>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8 lg:gap-4 max-w-5xl mx-auto relative">
-            {/* فواصل ذهبية عمودية بين القيم في الشاشات الكبيرة */}
             <div className="hidden md:block absolute top-1/2 left-1/3 -translate-y-1/2 w-px h-2/3 bg-gradient-to-b from-transparent via-[#c9a15a]/25 to-transparent" />
             <div className="hidden md:block absolute top-1/2 left-2/3 -translate-y-1/2 w-px h-2/3 bg-gradient-to-b from-transparent via-[#c9a15a]/25 to-transparent" />
 
             <ValueItem
-              icon={Diamond}
-              title={isRTL ? 'الجودة والفخامة' : 'Quality & Luxury'}
+              icon={Stethoscope}
+              title={isRTL ? 'التشخيص قبل أي إجراء' : 'Diagnosis Before Any Procedure'}
               desc={
                 isRTL
-                  ? 'نلتزم بتقديم تجربة استثنائية من لحظة دخولك العيادة وحتى الوصول للنتيجة المثالية.'
-                  : 'We commit to providing an exceptional experience from the moment you step in.'
+                  ? 'كل حالة مختلفة، وعشان كده البداية دايماً بتكون بفهم الحالة كويس قبل اختيار أي علاج أو إجراء.'
+                  : 'Every case is different, and that\'s why the beginning always starts with understanding the case well before choosing any treatment or procedure.'
               }
               index={0}
             />
             <ValueItem
-              icon={Heart}
-              title={isRTL ? 'الاهتمام الشخصي' : 'Personalized Care'}
+              icon={Diamond}
+              title={isRTL ? 'نتيجة تشبهك' : 'A Result That Resembles You'}
               desc={
                 isRTL
-                  ? 'كل وجه له قصة وجمال خاص، ولذلك نصمم خططاً علاجية تناسب طبيعتكِ أنتِ فقط.'
-                  : 'Every face has a unique beauty, so we design personalized treatment plans.'
+                  ? 'هدفي إن النتيجة تكون طبيعية ومتناسقة، وتبرز أفضل ملامحك من غير مبالغة أو تغيير في شخصيتك.'
+                  : 'My goal is for the result to be natural and harmonious, highlighting your best features without exaggeration or change in your personality.'
               }
               index={1}
             />
             <ValueItem
-              icon={Sparkles}
-              title={isRTL ? 'النتائج الطبيعية' : 'Natural Results'}
+              icon={Heart}
+              title={isRTL ? 'رعاية مستمرة' : 'Continuous Care'}
               desc={
                 isRTL
-                  ? 'نؤمن بالتجميل الذي يعزز الجمال ولا يغير الملامح، لتحصلي على إطلالة طبيعية ومشرقة.'
-                  : 'We believe in aesthetics that enhance beauty without changing features.'
+                  ? 'رحلة العلاج مبتنتهيش بعد الجلسة، والمتابعة جزء أساسي من الوصول لأفضل نتيجة.'
+                  : "The treatment journey doesn\'t end after the session, and follow-up is an essential part of reaching the best result."
               }
               index={2}
             />
@@ -216,7 +214,7 @@ const AboutUs = () => {
   );
 };
 
-// ================= الشريط الزجزاجي المتحرك (Zigzag Marquee Ribbon) =================
+// ================= ZIGZAG RIBBON =================
 const ZigzagRibbon = ({
   items,
   isRTL,
@@ -282,7 +280,7 @@ const ZigzagRibbon = ({
   );
 };
 
-// ================= بطاقة الرؤية/الرسالة بميلان ثلاثي الأبعاد وإطار ذهبي =================
+// ================= TILT CARD =================
 const TiltCard = ({ icon: Icon, title, text }: { icon: React.ElementType; title: string; text: string }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const rotateX = useMotionValue(0);
@@ -312,7 +310,6 @@ const TiltCard = ({ icon: Icon, title, text }: { icon: React.ElementType; title:
         style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
         className="relative h-full bg-white/70 backdrop-blur-xl border border-[#c9a15a]/25 p-10 lg:p-12 rounded-[2rem] shadow-xl shadow-[#c9a15a]/10 transition-shadow duration-500 hover:shadow-2xl hover:shadow-[#c9a15a]/20"
       >
-        {/* زوايا الإطار الذهبي - إحساس اللوحة/الشهادة الفاخرة */}
         <span className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-[#c9a15a]/60 rounded-tl-md" />
         <span className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-[#c9a15a]/60 rounded-tr-md" />
         <span className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-[#c9a15a]/60 rounded-bl-md" />
@@ -330,7 +327,7 @@ const TiltCard = ({ icon: Icon, title, text }: { icon: React.ElementType; title:
   );
 };
 
-// ================= عنصر قيمة أساسية =================
+// ================= VALUE ITEM =================
 const ValueItem = ({
   icon: Icon,
   title,
@@ -360,7 +357,7 @@ const ValueItem = ({
   </motion.div>
 );
 
-// ================= عداد رقمي متحرك (Trust Counter) =================
+// ================= COUNTER =================
 const Counter = ({ target, suffix = '', label }: { target: number; suffix?: string; label: string }) => {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
@@ -393,7 +390,7 @@ const Counter = ({ target, suffix = '', label }: { target: number; suffix?: stri
   );
 };
 
-// ================= بتلة وردة عائمة =================
+// ================= PETAL PARTICLE =================
 const PetalParticle = () => {
   const randomX = Math.random() * 100;
   const randomDelay = Math.random() * 8;
